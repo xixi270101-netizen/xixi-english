@@ -1883,10 +1883,11 @@ function showToast(msg) {
 
 // ============ NOTEBOOK ============
 function switchNbTab(tab) {
+  const suffix = { words: 'Words', expressions: 'Expr', grammar: 'Grammar' };
   document.querySelectorAll('.nb-panel').forEach(p => p.style.display = 'none');
   document.querySelectorAll('#nbTabWords, #nbTabExpr, #nbTabGrammar').forEach(b => b.classList.remove('active'));
-  document.getElementById('nb' + tab.charAt(0).toUpperCase() + tab.slice(1)).style.display = 'block';
-  document.getElementById('nbTab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+  document.getElementById('nb' + suffix[tab]).style.display = 'block';
+  document.getElementById('nbTab' + suffix[tab]).classList.add('active');
   renderNotebook(tab);
 }
 
@@ -1904,7 +1905,8 @@ function renderNotebook(type) {
     (day.accumulation.grammar || []).forEach(g => all.grammar.push({ ...g, date, topic }));
   });
 
-  const panelId = type === 'words' ? 'nbWords' : type === 'expressions' ? 'nbExpr' : 'nbGrammar';
+  const suffix = { words: 'Words', expressions: 'Expr', grammar: 'Grammar' };
+  const panelId = 'nb' + suffix[type];
   let items = all[type] || [];
   if (type === 'words') items.sort((a, b) => b.date.localeCompare(a.date));
   else items.sort((a, b) => b.date.localeCompare(a.date));
