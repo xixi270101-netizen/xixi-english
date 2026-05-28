@@ -1118,25 +1118,35 @@ let fbUid = null;
 let syncReady = false;
 let syncTimer = null;
 
-// Anonymous sign-in
+// Anonymous sign-in + real-time listener
 firebase.auth().signInAnonymously().then(user => {
   fbUid = user.user.uid;
-  // Pull cloud data on startup
-  return db.collection('users').doc(fbUid).get();
-}).then(doc => {
-  if (doc.exists && doc.data().appData) {
-    const cloud = doc.data().appData;
-    const local = loadLocal();
-    // Merge: cloud wins, but keep local if cloud is older (simple last-write-wins)
-    const merged = Object.assign({}, local, cloud);
-    localStorage.setItem('xixi_english_daily', JSON.stringify(merged));
-  }
   syncReady = true;
   updateSyncDot('green');
-  // Re-render current page
-  renderToday();
+
+  // Real-time listener: any change from another device updates local immediately
+  db.collection('users').doc(fbUid).onSnapshot(doc => {
+    if (!doc.exists) return;
+    const cloud = doc.data().appData;
+    if (!cloud) return;
+    const cloudUpdated = doc.data().updatedAt || '';
+    const localUpdated = localStorage.getItem('xixi_english_lastSync') || '';
+    // Only update local if cloud is newer (different timestamp)
+    if (cloudUpdated !== localUpdated) {
+      localStorage.setItem('xixi_english_daily', JSON.stringify(cloud));
+      localStorage.setItem('xixi_english_lastSync', cloudUpdated);
+      // Re-render if user is not currently editing (avoid disrupting active inputs)
+      if (!document.activeElement || document.activeElement.tagName === 'BODY') {
+        const activePage = document.querySelector('.page.active');
+        if (activePage) {
+          const pageId = activePage.id;
+          if (pageId === 'pageToday') renderToday();
+          else if (pageId === 'pageStats') renderStats();
+        }
+      }
+    }
+  });
 }).catch(err => {
-  console.log('Firebase offline, using local data');
   syncReady = true;
   updateSyncDot('gray');
 });
@@ -1150,8 +1160,10 @@ function updateSyncDot(color) {
 function syncToCloud() {
   if (!fbUid || !syncReady) return;
   const data = loadLocal();
+  const ts = Date.now().toString();
+  localStorage.setItem('xixi_english_lastSync', ts);
   updateSyncDot('yellow');
-  db.collection('users').doc(fbUid).set({ appData: data, updatedAt: new Date().toISOString() }, { merge: true })
+  db.collection('users').doc(fbUid).set({ appData: data, updatedAt: ts }, { merge: true })
     .then(() => updateSyncDot('green'))
     .catch(() => updateSyncDot('gray'));
 }
