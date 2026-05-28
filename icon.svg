@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6e94a6"/>
+      <stop offset="100%" style="stop-color:#b8d0dc"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="120" fill="url(#bg)"/>
+  <!-- water waves -->
+  <path d="M0 340 Q100 280 200 330 Q300 380 400 320 Q460 290 512 310 L512 512 L0 512Z" fill="rgba(255,255,255,0.18)"/>
+  <path d="M0 400 Q120 360 220 390 Q320 420 420 370 Q480 340 512 360 L512 512 L0 512Z" fill="rgba(255,255,255,0.10)"/>
+  <path d="M0 440 Q140 400 260 430 Q380 460 512 420 L512 512 L0 512Z" fill="rgba(255,255,255,0.06)"/>
+  <!-- stars -->
+  <polygon points="256,28 262,48 282,54 262,60 256,80 250,60 230,54 250,48" fill="white" opacity="0.95"/>
+  <polygon points="110,170 116,186 132,192 116,198 110,214 104,198 88,192 104,186" fill="white" opacity="0.8"/>
+  <polygon points="400,130 405,142 417,147 405,152 400,164 395,152 383,147 395,142" fill="white" opacity="0.7"/>
+  <polygon points="160,300 164,310 174,314 164,318 160,328 156,318 146,314 156,310" fill="white" opacity="0.5"/>
+  <polygon points="370,280 374,290 384,294 374,298 370,308 366,298 356,294 366,290" fill="white" opacity="0.4"/>
+  <circle cx="320" cy="100" r="3" fill="white" opacity="0.7"/>
+  <circle cx="90" cy="100" r="2.5" fill="white" opacity="0.6"/>
+  <circle cx="440" cy="220" r="2" fill="white" opacity="0.5"/>
+  <circle cx="70" cy="260" r="2" fill="white" opacity="0.4"/>
+  <circle cx="190" cy="70" r="2" fill="white" opacity="0.5"/>
+  <circle cx="450" cy="350" r="1.5" fill="white" opacity="0.3"/>
+  <circle cx="300" cy="410" r="2" fill="white" opacity="0.3"/>
+</svg>

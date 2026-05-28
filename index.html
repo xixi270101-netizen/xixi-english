@@ -11,8 +11,8 @@
 <meta name="apple-mobile-web-app-title" content="溪溪英语">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#8ca8b8">
-<link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><rect width='180' height='180' rx='36' fill='%238ca8b8'/><text x='90' y='120' text-anchor='middle' fill='white' font-size='90' font-family='sans-serif' font-weight='300'>溪</text></svg>">
-<link rel="icon" sizes="192x192" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192'><rect width='192' height='192' rx='38' fill='%238ca8b8'/><text x='96' y='128' text-anchor='middle' fill='white' font-size='96' font-family='sans-serif' font-weight='300'>溪</text></svg>">
+<link rel="apple-touch-icon" sizes="180x180" href="icon.svg">
+<link rel="icon" sizes="192x192" href="icon.svg">
 <link rel="manifest" href="manifest.json">
 <style>
 :root {
@@ -604,7 +604,7 @@ nav button.active {
 
 <header>
   <h1>溪溪的英语账号</h1>
-  <p id="headerSub">今天录了吗？</p>
+  <p id="headerSub" style="transition: opacity 0.3s;">今天录了吗？</p>
 </header>
 
 <nav>
@@ -612,6 +612,7 @@ nav button.active {
   <button onclick="switchPage('timer')" id="navTimer">计时器</button>
   <button onclick="switchPage('topics')" id="navTopics">话题</button>
   <button onclick="switchPage('prompts')" id="navPrompts">提示词</button>
+  <button onclick="switchPage('notebook')" id="navNotebook">笔记本</button>
   <button onclick="switchPage('stats')" id="navStats">进度</button>
 </nav>
 
@@ -669,6 +670,11 @@ nav button.active {
   <div class="card">
     <h2>📊 今日用时记录</h2>
     <div id="timeLog"></div>
+  </div>
+  <div class="card" style="text-align:center;">
+    <p style="font-size:13px;color:var(--sub);margin-bottom:8px;">每天固定时间提醒你录视频</p>
+    <button class="btn btn-primary btn-sm" onclick="requestReminder()">🔔 设置每日提醒（21:00）</button>
+    <p style="font-size:10px;color:var(--sub);margin-top:6px;">需要允许通知权限。仅iOS Safari独立模式下生效</p>
   </div>
 </div>
 
@@ -867,6 +873,54 @@ Day5 / {话题} / 播放___ 点赞___ 评论___ 收藏___
 Day6 / {话题} / 播放___ 点赞___ 评论___ 收藏___
 Day7 / {话题} / 播放___ 点赞___ 评论___ 收藏___</pre>
   </div>
+  <div class="prompt-card" style="border: 1px solid var(--accent-light);">
+    <h3>🎬 每日脚本撰写（根据选定话题写稿）</h3>
+    <button class="copy-btn" onclick="copyPrompt('script')">复制</button>
+    <pre id="promptScript">你是我的英语口播脚本教练。我今天选了一个话题，需要你帮我写一条1-3分钟的英语口播稿。
+
+我的英语水平A2-B1。
+
+【我的话题】
+（英文）{粘贴英文话题}
+（中文）{粘贴中文话题}
+
+【我对这个话题的初步想法】
+{粘贴你在灵感想法里写的内容}
+
+【请帮我写口播稿】
+结构：
+- Hook（开头1句抓人，用疑问句或个人经历开头）
+- Body（2-3段，每段3-4句，讲具体感受或故事）
+- Ending（1句总结，温柔有力）
+
+语言要求：
+- 每句不超过12个词
+- 只用一般现在时/过去时/进行时
+- 用最常见词（sad不是melancholy, tired不是exhausted）
+- 加入语气停顿词（honestly, you know, actually, I mean）
+- 像在对朋友说话，不是朗读课文
+
+格式：
+英文口播稿：（每句一行）
+生词提示：（标出B1以上水平的词+音标+中文）
+总词数：
+预计口播时长：</pre>
+  </div>
+</div>
+
+<!-- ===== 笔记本页面 ===== -->
+<div id="pageNotebook" class="page">
+  <div class="card">
+    <h2>📚 笔记本 · 全部积累</h2>
+    <div class="accum-tabs">
+      <button class="accum-tab active" id="nbTabWords" onclick="switchNbTab('words')">📝 单词</button>
+      <button class="accum-tab" id="nbTabExpr" onclick="switchNbTab('expressions')">💬 表达</button>
+      <button class="accum-tab" id="nbTabGrammar" onclick="switchNbTab('grammar')">📖 语法</button>
+    </div>
+    <div id="nbWords" class="nb-panel"></div>
+    <div id="nbExpr" class="nb-panel" style="display:none;"></div>
+    <div id="nbGrammar" class="nb-panel" style="display:none;"></div>
+  </div>
 </div>
 
 <!-- ===== 进度页面 ===== -->
@@ -883,8 +937,22 @@ Day7 / {话题} / 播放___ 点赞___ 评论___ 收藏___</pre>
     <div id="milestones"></div>
   </div>
   <div class="card">
+    <h2>📦 归档记录</h2>
+    <p style="font-size:12px;color:var(--sub);margin-bottom:8px;">每次在话题工作台保存后自动归档</p>
+    <div id="archiveList"><div class="accum-empty">还没有归档记录</div></div>
+  </div>
+  <div class="card">
+    <h2>☁️ 数据备份</h2>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-outline btn-sm" style="flex:1;" onclick="exportData()">📤 导出备份</button>
+      <button class="btn btn-outline btn-sm" style="flex:1;" onclick="document.getElementById('importFile').click()">📥 导入恢复</button>
+    </div>
+    <input type="file" id="importFile" style="display:none;" accept=".json" onchange="importData(event)">
+    <p style="font-size:10px;color:var(--sub);margin-top:6px;text-align:center;">导出后保存到iCloud或文件App，换手机可恢复</p>
+  </div>
+  <div class="card">
     <h2>🔄 重置</h2>
-    <button class="btn btn-outline btn-sm" onclick="resetAll()" style="width:100%;color:#c96b5a;">清空所有数据重新开始</button>
+    <button class="btn btn-outline btn-sm" onclick="resetAll()" style="width:100%;">清空所有数据重新开始</button>
   </div>
 </div>
 
@@ -1050,6 +1118,8 @@ function switchPage(name) {
     renderTopics('all');
     renderInspirations();
   }
+  if (name === 'notebook') { renderNotebook('words'); }
+  if (name === 'stats') { renderStats(); renderArchives(); }
 }
 
 // ============ TODAY PAGE ============
@@ -1079,7 +1149,13 @@ function renderToday() {
   }
   document.getElementById('weekDone').textContent = weekDone;
   document.getElementById('weekProgress').style.width = (weekDone / 7 * 100) + '%';
-  document.getElementById('headerSub').textContent = allDone ? '今天完成啦 ✅' : '今天录了吗？';
+  // Random quote or status
+  const quotes = [
+    '今天录了吗？','说出口，就是进步 ✨','你的声音值得被听见','不完美才是真实','每一步都算数','英语是你的翅膀 🕊️','想到什么就说什么','先完成，再完美','你比自己想象的更勇敢','说错也没关系','每一个单词都是积累','今天的你很特别','做自己的光 💫','语言是通往自由的桥','Practice makes progress','Speak from your heart','Your voice matters','Small steps, big changes','You are enough','Keep going, you\'re doing great','Embrace the imperfect','One word at a time','Be kind to yourself today','Trust the process','成长在路上','温柔地对待自己','敢说就是赢','每天进步一点点','用英语打开新世界','你已经很棒了'
+  ];
+  const idx = new Date().getDate() % quotes.length; // changes daily
+  const q = quotes[Math.floor(Math.random() * quotes.length)];
+  document.getElementById('headerSub').textContent = allDone ? '今天完成啦 ✅' : q;
 
   // Steps
   let stepsHtml = '';
@@ -1311,12 +1387,30 @@ function saveWorkbenchSilent() {
   if (!data[wbDayKey]) data[wbDayKey] = { checks: {}, accumulation: { words: [], expressions: [], grammar: [] } };
   data[wbDayKey].thoughts = document.getElementById('wbThoughts').value;
   data[wbDayKey].script = document.getElementById('wbScript').value;
-  // Collect rows
   data[wbDayKey].accumulation = {
     words: collectWordRows(),
     expressions: collectExprRows(),
     grammar: collectGrammarRows()
   };
+  // Archive this save
+  const topic = data[wbDayKey].topic || '未命名话题';
+  const topicZh = data[wbDayKey].topicZh || '';
+  if (!data._archives) data._archives = [];
+  // Update existing archive for this date, or create new
+  const existIdx = data._archives.findIndex(a => a.date === wbDayKey);
+  const entry = {
+    date: wbDayKey,
+    topic: topic,
+    topicZh: topicZh,
+    thoughts: data[wbDayKey].thoughts,
+    script: data[wbDayKey].script,
+    wordsCount: data[wbDayKey].accumulation.words.length,
+    exprCount: data[wbDayKey].accumulation.expressions.length,
+    grammarCount: data[wbDayKey].accumulation.grammar.length,
+    savedAt: new Date().toLocaleString('zh-CN', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' })
+  };
+  if (existIdx >= 0) data._archives[existIdx] = entry;
+  else data._archives.unshift(entry);
   saveData(data);
 }
 
@@ -1522,7 +1616,8 @@ document.addEventListener('click', function(e) {
 
 // ============ PROMPTS ============
 function copyPrompt(type) {
-  const el = document.getElementById('prompt' + type.charAt(0).toUpperCase() + type.slice(1));
+  const idMap = { batch: 'promptBatch', single: 'promptSingle', oral: 'promptOral', review: 'promptReview', script: 'promptScript' };
+  const el = document.getElementById(idMap[type] || ('prompt' + type.charAt(0).toUpperCase() + type.slice(1)));
   navigator.clipboard.writeText(el.textContent).then(() => {
     const btns = document.querySelectorAll('.copy-btn');
     btns.forEach(b => { if (b.textContent === '复制') { b.textContent = '已复制!'; b.classList.add('copied'); setTimeout(() => { b.textContent = '复制'; b.classList.remove('copied'); }, 1500); } });
@@ -1574,6 +1669,7 @@ function renderStats() {
     </div>`;
   });
   document.getElementById('milestones').innerHTML = msHtml;
+  renderArchives();
 }
 
 function saveStats() {
@@ -1685,6 +1781,148 @@ function showToast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ============ NOTEBOOK ============
+function switchNbTab(tab) {
+  document.querySelectorAll('.nb-panel').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('#nbTabWords, #nbTabExpr, #nbTabGrammar').forEach(b => b.classList.remove('active'));
+  document.getElementById('nb' + tab.charAt(0).toUpperCase() + tab.slice(1)).style.display = 'block';
+  document.getElementById('nbTab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+  renderNotebook(tab);
+}
+
+function renderNotebook(type) {
+  const data = loadData();
+  const all = { words: [], expressions: [], grammar: [] };
+  Object.keys(data).forEach(key => {
+    if (key.startsWith('_')) return;
+    const day = data[key];
+    if (!day?.accumulation) return;
+    const date = key;
+    const topic = day.topic || '';
+    (day.accumulation.words || []).forEach(w => all.words.push({ ...w, date, topic }));
+    (day.accumulation.expressions || []).forEach(e => all.expressions.push({ ...e, date, topic }));
+    (day.accumulation.grammar || []).forEach(g => all.grammar.push({ ...g, date, topic }));
+  });
+
+  const panelId = type === 'words' ? 'nbWords' : type === 'expressions' ? 'nbExpr' : 'nbGrammar';
+  let items = all[type] || [];
+  if (type === 'words') items.sort((a, b) => b.date.localeCompare(a.date));
+  else items.sort((a, b) => b.date.localeCompare(a.date));
+
+  let html = '';
+  if (items.length === 0) {
+    html = '<div class="accum-empty">还没有积累，去话题工作台开始记录吧 ✨</div>';
+  } else {
+    html += `<div style="font-size:11px;color:var(--sub);margin-bottom:8px;">共 ${items.length} 条 · 来自 ${new Set(items.map(i=>i.date)).size} 天</div>`;
+    items.forEach(item => {
+      const dateLabel = item.date.slice(5);
+      if (type === 'words') {
+        html += `<div class="accum-item">
+          <div class="accum-main"><span class="accum-word">${escHtml(item.word)}</span> <span class="accum-meaning">${escHtml(item.meaning)}</span></div>
+          <span style="font-size:10px;color:var(--sub);flex-shrink:0;">${dateLabel}</span>
+        </div>`;
+      } else if (type === 'expressions') {
+        html += `<div class="accum-item">
+          <div class="accum-main" style="font-style:italic;color:var(--text);">${escHtml(item.text)}${item.zh ? '<br><span style="font-size:12px;color:var(--sub);font-style:normal;">'+escHtml(item.zh)+'</span>' : ''}</div>
+          <span style="font-size:10px;color:var(--sub);flex-shrink:0;">${dateLabel}</span>
+        </div>`;
+      } else {
+        html += `<div class="accum-item">
+          <div class="accum-main"><span style="color:var(--accent2);">📖 ${escHtml(item.point)}</span>${item.note ? '<br><span style="font-size:12px;color:var(--sub);">'+escHtml(item.note)+'</span>' : ''}</div>
+          <span style="font-size:10px;color:var(--sub);flex-shrink:0;">${dateLabel}</span>
+        </div>`;
+      }
+    });
+  }
+  document.getElementById(panelId).innerHTML = html;
+}
+
+// ============ ARCHIVES ============
+function renderArchives() {
+  const data = loadData();
+  const archives = data._archives || [];
+  let html = '';
+  if (archives.length === 0) {
+    html = '<div class="accum-empty">还没有归档记录</div>';
+  } else {
+    archives.forEach(a => {
+      html += `<div class="accum-item" style="flex-direction:column;align-items:stretch;gap:4px;cursor:pointer;" onclick="viewArchive('${a.date}')">
+        <div style="font-weight:600;color:var(--text);font-size:14px;">${escHtml(a.topic)}</div>
+        <div style="font-size:12px;color:var(--sub);">${a.date} · ${a.savedAt} · 📝${a.wordsCount} 💬${a.exprCount} 📖${a.grammarCount}</div>
+      </div>`;
+    });
+  }
+  document.getElementById('archiveList').innerHTML = html;
+}
+
+function viewArchive(dateKey) {
+  const data = loadData();
+  const day = data[dateKey];
+  if (!day) return;
+  openTopicWorkbench(dateKey, dateKey);
+}
+
+// ============ EXPORT / IMPORT ============
+function exportData() {
+  const data = loadData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'xixi-english-backup-' + getToday() + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('备份已下载 📤');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      saveData(data);
+      renderStats();
+      renderArchives();
+      renderToday();
+      showToast('数据已恢复 ✅');
+    } catch (err) {
+      showToast('文件格式错误 ❌');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ============ TIMER REMINDER ============
+function requestReminder() {
+  if ('Notification' in window) {
+    Notification.requestPermission().then(p => {
+      if (p === 'granted') {
+        // Set daily reminder at 21:00
+        const now = new Date();
+        const reminder = new Date(now);
+        reminder.setHours(21, 0, 0, 0);
+        if (reminder <= now) reminder.setDate(reminder.getDate() + 1);
+        const delay = reminder.getTime() - now.getTime();
+        setTimeout(() => {
+          new Notification('溪溪英语', { body: '今天的英语录了吗？🎙️', icon: 'icon.svg' });
+          // Re-schedule for next day
+          setInterval(() => {
+            new Notification('溪溪英语', { body: '今天的英语录了吗？🎙️', icon: 'icon.svg' });
+          }, 24 * 60 * 60 * 1000);
+        }, delay);
+        showToast('每日21:00提醒已设置 🔔');
+      } else {
+        showToast('需要允许通知权限才能设置提醒');
+      }
+    });
+  } else {
+    showToast('你的浏览器不支持通知功能');
+  }
 }
 
 // ============ INIT ============
