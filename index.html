@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>溪溪英语</title>
+
+<!-- PWA: iPhone 桌面 App -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="溪溪英语">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#8ca8b8">
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><rect width='180' height='180' rx='36' fill='%238ca8b8'/><text x='90' y='120' text-anchor='middle' fill='white' font-size='90' font-family='sans-serif' font-weight='300'>溪</text></svg>">
+<link rel="icon" sizes="192x192" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192'><rect width='192' height='192' rx='38' fill='%238ca8b8'/><text x='96' y='128' text-anchor='middle' fill='white' font-size='96' font-family='sans-serif' font-weight='300'>溪</text></svg>">
+<link rel="manifest" href="manifest.json">
+<style>
+:root {
+  --bg: #f4f7f9;
+  --card: #ffffff;
+  --text: #33434d;
+  --sub: #8599a6;
+  --accent: #8ca8b8;
+  --accent2: #5c7d8e;
+  --border: #dfe8ed;
+  --tag: #eef3f7;
+  --done: #8aaf9e;
+  --warn: #c9b96e;
+  --accent-light: #bdd3df;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px;
+  padding-bottom: 100px;
+  line-height: 1.6;
+  -webkit-tap-highlight-color: transparent;
+}
+header {
+  text-align: center;
+  padding: 24px 0 8px;
+}
+header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent2);
+  letter-spacing: 0.5px;
+}
+header p {
+  font-size: 13px;
+  color: var(--sub);
+  margin-top: 4px;
+}
+nav {
+  display: flex;
+  gap: 6px;
+  margin: 16px 0;
+  background: var(--card);
+  border-radius: 16px;
+  padding: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+nav button {
+  flex: 1;
+  padding: 10px 4px;
+  border: none;
+  background: transparent;
+  border-radius: 13px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sub);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+nav button.active {
+  background: var(--accent);
+  color: #fff;
+}
+.page { display: none; }
+.page.active { display: block; }
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.card h2 {
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: var(--accent2);
+}
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.step:last-child { border-bottom: none; }
+.step input[type="checkbox"] {
+  width: 22px; height: 22px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step label {
+  font-size: 14px;
+  cursor: pointer;
+  flex: 1;
+}
+.step .time-badge {
+  font-size: 11px;
+  color: var(--sub);
+  background: var(--tag);
+  padding: 2px 8px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.step label.done {
+  text-decoration: line-through;
+  color: var(--sub);
+}
+.timer-section {
+  text-align: center;
+  padding: 12px 0;
+}
+.timer-display {
+  font-size: 48px;
+  font-weight: 300;
+  color: var(--accent2);
+  font-variant-numeric: tabular-nums;
+}
+.timer-btns {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 8px;
+}
+.cat-filter-btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--tag);
+  color: var(--accent2);
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.cat-filter-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-outline { background: var(--tag); color: var(--accent2); }
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+.topic-item {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+.topic-item .cat {
+  font-size: 10px;
+  background: var(--tag);
+  color: var(--accent2);
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+.prompt-card {
+  background: #f6f9fb;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+  position: relative;
+}
+.prompt-card h3 {
+  font-size: 13px;
+  color: var(--accent2);
+  margin-bottom: 6px;
+}
+.prompt-card pre {
+  font-size: 11px;
+  white-space: pre-wrap;
+  color: var(--text);
+  line-height: 1.5;
+  max-height: 120px;
+  overflow-y: auto;
+  background: #fafcfd;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.copy-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 11px;
+  padding: 4px 12px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.copy-btn.copied { background: var(--done); }
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.stat-value { font-weight: 600; color: var(--accent2); }
+#todayStatus {
+  text-align: center;
+  padding: 16px;
+  font-size: 14px;
+}
+#todayStatus .big-num {
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--accent2);
+}
+.progress-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  margin: 8px 0;
+  overflow: hidden;
+}
+.progress-bar .fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+.milestone {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 13px;
+}
+.milestone .icon { font-size: 18px; }
+.milestone.reached { color: var(--done); }
+.milestone.pending { color: var(--sub); }
+.inspiration-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+  background: #fafcfd;
+  color: var(--text);
+  line-height: 1.6;
+}
+.inspiration-input::placeholder { color: #bcc9d2; }
+.inspiration-list { margin-top: 12px; }
+.inspiration-item {
+  padding: 10px 12px;
+  background: #fafcfd;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: var(--text);
+  position: relative;
+  line-height: 1.5;
+}
+.inspiration-item .time {
+  font-size: 10px;
+  color: var(--sub);
+  margin-bottom: 2px;
+}
+.inspiration-item .delete-inspo {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #c4d3dc;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(51,67,77,0.4);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.modal-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-sheet {
+  background: #fff;
+  width: 100%;
+  max-width: 480px;
+  border-radius: 20px 20px 0 0;
+  padding: 24px 20px 40px;
+  transform: translateY(100%);
+  transition: transform 0.3s ease-out;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.modal-overlay.show .modal-sheet {
+  transform: translateY(0);
+}
+.modal-sheet h3 {
+  font-size: 13px;
+  color: var(--accent2);
+  margin-bottom: 4px;
+}
+.modal-sheet .modal-cat {
+  font-size: 11px;
+  background: var(--tag);
+  color: var(--accent2);
+  padding: 3px 10px;
+  border-radius: 10px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.modal-sheet .modal-en {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+.modal-sheet .modal-zh {
+  font-size: 14px;
+  color: var(--sub);
+  margin-bottom: 16px;
+}
+.modal-sheet .modal-thoughts {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 13px;
+  font-family: inherit;
+  min-height: 80px;
+  resize: vertical;
+  background: #fafcfd;
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+.modal-sheet .modal-thoughts::placeholder { color: #bcc9d2; }
+.modal-btns {
+  display: flex;
+  gap: 10px;
+}
+.modal-btns .btn { flex: 1; }
+.topic-item-clickable {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+.topic-item-clickable:active {
+  background: var(--tag);
+}
+.week-day-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  border-radius: 10px;
+  margin-bottom: 2px;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.week-day-row:active { background: var(--tag); }
+.week-day-row .day-label {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+  min-width: 36px;
+}
+.week-day-row .day-topic {
+  flex: 1;
+  font-size: 12px;
+  color: var(--sub);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.week-day-row .day-arrow {
+  color: var(--accent-light);
+  font-size: 16px;
+}
+.picker-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.picker-header h2 { flex: 1; margin: 0; }
+.picker-topic-card {
+  padding: 14px;
+  background: #fafcfd;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.picker-topic-card:active { background: var(--tag); border-color: var(--accent); }
+.picker-topic-card .pt-cat { font-size: 10px; background: var(--tag); color: var(--accent2); padding: 2px 8px; border-radius: 8px; display: inline-block; margin-bottom: 4px; }
+.picker-topic-card .pt-en { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.picker-topic-card .pt-zh { font-size: 12px; color: var(--sub); }
+.wb-topic-card {
+  background: #f6f9fb;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.wb-topic-card .wb-cat { font-size: 10px; background: var(--accent-light); color: #fff; padding: 2px 8px; border-radius: 8px; display: inline-block; margin-bottom: 6px; }
+.wb-topic-card .wb-en { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; line-height: 1.4; }
+.wb-topic-card .wb-zh { font-size: 13px; color: var(--sub); }
+.wb-section { margin-bottom: 16px; }
+.wb-section h3 { font-size: 14px; color: var(--accent2); margin-bottom: 8px; }
+.wb-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+  background: #fafcfd;
+  color: var(--text);
+  line-height: 1.6;
+}
+.wb-textarea::placeholder { color: #bcc9d2; }
+.wb-textarea.large { min-height: 140px; }
+.accum-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+  background: var(--tag);
+  border-radius: 12px;
+  padding: 3px;
+}
+.accum-tab {
+  flex: 1;
+  text-align: center;
+  padding: 8px 4px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sub);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.accum-tab.active { background: #fff; color: var(--accent2); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+.accum-add-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.accum-add-row input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  background: #fafcfd;
+  color: var(--text);
+}
+.accum-add-row input::placeholder { color: #bcc9d2; font-size: 12px; }
+.accum-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  background: #fafcfd;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+.accum-item .accum-main { flex: 1; min-width: 0; }
+.accum-item .accum-word { font-weight: 600; color: var(--accent2); }
+.accum-item .accum-meaning { color: var(--sub); font-size: 12px; margin-top: 1px; }
+.accum-item .accum-delete {
+  background: none;
+  border: none;
+  color: #c4d3dc;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+.accum-empty { text-align: center; color: #bcc9d2; font-size: 13px; padding: 20px 0; }
+.input-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+  align-items: center;
+}
+.input-row input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  background: #fafcfd;
+  color: var(--text);
+  min-width: 0;
+}
+.input-row input::placeholder { color: #bcc9d2; font-size: 12px; }
+.input-row .row-delete {
+  background: none;
+  border: none;
+  color: #c4d3dc;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+.translate-btn {
+  background: var(--accent-light);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.translate-btn:active { background: var(--accent); }
+.translate-btn.loading { opacity: 0.6; pointer-events: none; }
+.add-row-btn {
+  width: 100%;
+  padding: 10px;
+  border: 1px dashed var(--accent-light);
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--accent2);
+  background: transparent;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: all 0.15s;
+}
+.add-row-btn:active { background: var(--tag); }
+#toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #33434d;
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 20px;
+  font-size: 13px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 100;
+}
+#toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>溪溪的英语账号</h1>
+  <p id="headerSub">今天录了吗？</p>
+</header>
+
+<nav>
+  <button onclick="switchPage('today')" id="navToday" class="active">今日</button>
+  <button onclick="switchPage('timer')" id="navTimer">计时器</button>
+  <button onclick="switchPage('topics')" id="navTopics">话题</button>
+  <button onclick="switchPage('prompts')" id="navPrompts">提示词</button>
+  <button onclick="switchPage('stats')" id="navStats">进度</button>
+</nav>
+
+<!-- ===== 今日页面 ===== -->
+<div id="pageToday" class="page active">
+  <div class="card" id="todayStatus">
+    <div class="big-num" id="streak">0</div>
+    <div>连续更新天数</div>
+    <div class="progress-bar" style="margin-top: 12px;">
+      <div class="fill" id="weekProgress" style="width: 0%;"></div>
+    </div>
+    <div style="font-size: 12px; color: var(--sub); margin-top: 4px;">本周 <span id="weekDone">0</span>/7</div>
+  </div>
+
+  <div class="card">
+    <h2>📋 今日任务</h2>
+    <div id="dailySteps"></div>
+    <div style="text-align: center; margin-top: 12px;">
+      <button class="btn btn-primary btn-sm" onclick="checkAllDone()">全部完成 🎉</button>
+    </div>
+  </div>
+
+  <div class="card" style="background: var(--tag);">
+    <p style="font-size: 12px; color: var(--accent2); text-align: center;">
+      ⚡ 加班日简化：录30秒情绪碎片就发，保持惯性 > 内容质量
+    </p>
+  </div>
+
+  <div class="card" style="background: #eef3f7; border: 1px dashed var(--accent-light);" id="installTip">
+    <p style="font-size:12px;color:var(--accent2);text-align:center;margin:0;">
+      📱 添加到iPhone桌面：用Safari打开 → 点底部「分享」→「添加到主屏幕」→ 就能像App一样打开啦
+      <br><button class="btn btn-outline btn-sm" style="margin-top:6px;" onclick="document.getElementById('installTip').style.display='none'">知道了</button>
+    </p>
+  </div>
+</div>
+
+<!-- ===== 计时器页面 ===== -->
+<div id="pageTimer" class="page">
+  <div class="card">
+    <h2>⏱ 步骤计时器</h2>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+      <button class="btn btn-outline btn-sm preset-btn" data-min="8">改稿 8min</button>
+      <button class="btn btn-outline btn-sm preset-btn" data-min="5">练习 5min</button>
+      <button class="btn btn-outline btn-sm preset-btn" data-min="10">录制 10min</button>
+      <button class="btn btn-outline btn-sm preset-btn" data-min="5">剪发 5min</button>
+    </div>
+    <div class="timer-section">
+      <div class="timer-display" id="timerDisplay">00:00</div>
+      <div class="timer-btns">
+        <button class="btn btn-primary" id="timerStart" onclick="toggleTimer()">开始</button>
+        <button class="btn btn-outline" onclick="resetTimer()">重置</button>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>📊 今日用时记录</h2>
+    <div id="timeLog"></div>
+  </div>
+</div>
+
+<!-- ===== 话题页面 ===== -->
+<div id="pageTopics" class="page">
+
+  <!-- 正常视图 -->
+  <div id="topicNormalView">
+    <div class="card">
+      <h2>🎯 本周话题</h2>
+      <p style="font-size:12px;color:var(--sub);margin-bottom:10px;">点击某一天 → 从话题库随机抽取，告别选择困难</p>
+      <div id="weekTopicsList"></div>
+    </div>
+    <div class="card">
+      <h2>🗂 全部话题库（共100条）</h2>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
+        <button class="cat-filter-btn active" data-cat="all">全部</button>
+        <button class="cat-filter-btn" data-cat="情绪">情绪</button>
+        <button class="cat-filter-btn" data-cat="家庭">家庭</button>
+        <button class="cat-filter-btn" data-cat="跨文化">跨文化</button>
+        <button class="cat-filter-btn" data-cat="身体">身体</button>
+        <button class="cat-filter-btn" data-cat="爱情">爱情</button>
+        <button class="cat-filter-btn" data-cat="工作">工作</button>
+        <button class="cat-filter-btn" data-cat="日常">日常</button>
+      </div>
+      <div id="topicsList"></div>
+    </div>
+    <div class="card">
+      <h2>💡 灵感记录</h2>
+      <p style="font-size:12px;color:var(--sub);margin-bottom:8px;">想到什么就记下来——一个话题、一句话、一种情绪都可以</p>
+      <textarea class="inspiration-input" id="inspirationInput" placeholder="比如：今天在地铁上看到一个女生在哭，我突然想到...&#10;&#10;或者：想聊一聊我为什么害怕被别人觉得"不够好"..."></textarea>
+      <button class="btn btn-primary btn-sm" style="margin-top:8px;width:100%;" onclick="saveInspiration()">记下这个灵感</button>
+      <div class="inspiration-list" id="inspirationList"></div>
+    </div>
+  </div>
+
+  <!-- 话题选择器视图（无话题时选话题） -->
+  <div id="topicPickerView" style="display:none;">
+    <div class="card">
+      <div class="picker-header">
+        <button class="btn btn-outline btn-sm" onclick="closeTopicPicker()">← 返回</button>
+        <h2 id="pickerTitle">选择话题</h2>
+      </div>
+      <p style="font-size:12px;color:var(--sub);margin-bottom:12px;">每次随机抽8条，挑一个你最有感觉的</p>
+      <button class="btn btn-primary btn-sm" style="width:100%;margin-bottom:14px;" onclick="shufflePickerTopics()">🔄 换一批话题</button>
+      <div id="pickerTopicList"></div>
+    </div>
+  </div>
+
+  <!-- 话题工作台视图（已选话题时编辑脚本+积累） -->
+  <div id="topicWorkbenchView" style="display:none;">
+    <div class="card" style="margin-bottom:8px;">
+      <div class="picker-header">
+        <button class="btn btn-outline btn-sm" onclick="closeTopicWorkbench()">← 返回</button>
+        <h2 id="wbDayTitle">周一</h2>
+      </div>
+    </div>
+
+    <!-- 话题信息 -->
+    <div class="card wb-topic-card">
+      <div id="wbTopicContent"></div>
+    </div>
+
+    <!-- 灵感想法 -->
+    <div class="card wb-section">
+      <h3>💭 灵感想法</h3>
+      <textarea class="wb-textarea" id="wbThoughts" placeholder="对这个话题的初步想法、想说的角度、联想到的经历..."></textarea>
+    </div>
+
+    <!-- 脚本编辑 -->
+    <div class="card wb-section">
+      <h3>✍️ 脚本编辑</h3>
+      <textarea class="wb-textarea large" id="wbScript" placeholder="在这里写你的英语脚本草稿...&#10;&#10;可以先写中文思路，再试着翻译成简单英语&#10;不确定的表达先用中文占位，后面再让AI帮忙翻译"></textarea>
+    </div>
+
+    <!-- 今日笔记ing（原积累铺） -->
+    <div class="card">
+      <h3>📚 今日笔记ing</h3>
+      <div class="accum-tabs">
+        <button class="accum-tab active" id="accumTabWords" onclick="switchAccumTab('words')">📝 新单词</button>
+        <button class="accum-tab" id="accumTabExpr" onclick="switchAccumTab('expressions')">💬 新表达</button>
+        <button class="accum-tab" id="accumTabGrammar" onclick="switchAccumTab('grammar')">📖 语法点</button>
+      </div>
+
+      <!-- 新单词 -->
+      <div id="accumPanelWords" class="accum-panel">
+        <div id="wordRows"></div>
+        <button class="add-row-btn" onclick="addWordRow()">+ 添加单词</button>
+      </div>
+
+      <!-- 新表达 -->
+      <div id="accumPanelExpr" class="accum-panel" style="display:none;">
+        <div id="exprRows"></div>
+        <button class="add-row-btn" onclick="addExprRow()">+ 添加表达</button>
+      </div>
+
+      <!-- 语法点 -->
+      <div id="accumPanelGrammar" class="accum-panel" style="display:none;">
+        <div id="grammarRows"></div>
+        <button class="add-row-btn" onclick="addGrammarRow()">+ 添加语法点</button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" style="width:100%;margin-top:12px;margin-bottom:40px;" onclick="saveWorkbench()">💾 保存所有内容</button>
+  </div>
+
+</div>
+
+<!-- ===== 提示词页面 ===== -->
+<div id="pagePrompts" class="page">
+  <div class="prompt-card">
+    <h3>📦 周末批量翻译（推荐）</h3>
+    <button class="copy-btn" onclick="copyPrompt('batch')">复制</button>
+    <pre id="promptBatch">你是我的英语口语教练。我在做一个英语口播视频账号，每天录1-3分钟视频，用英语聊情感、成长、原生家庭、跨文化这些话题。
+
+我的英语水平：A2-B1（能说简单句，但复杂一点就卡住。词汇量有限，不会用完成时和虚拟语气）。
+
+【你的任务】
+下面是我用中文随口说的7段话。请帮我转成我能流畅说出来的英语口语。不是"翻译"，是"转写"——把我内心想表达的意思，用我能驾驭的英语说出来。
+
+【具体要求】
+1. 词汇：用最常见的词。比如"悲伤"用sad不要用melancholy，"疲惫"用tired不要用exhausted
+2. 句子：每句不超过12个词。超过就拆成两句
+3. 时态：只用一般现在时、一般过去时、现在进行时。不要用完成时
+4. 语气：保留我说话的感觉——我停顿的地方留白，我激动的地方用短句，我犹豫的地方用maybe/I guess/I think
+5. 结构：开头1句hook，中间2-3段讲具体经历/感受，结尾1句总结
+
+【输出格式】
+Day1 话题：{话题名}
+---
+英文口播稿：
+（英文正文，每句一行，方便我读）
+
+📝 发音笔记：
+• 难词1 /音标/ — 简单解释
+• 难词2 /音标/ — 简单解释
+• 难词3 /音标/ — 简单解释
+---
+
+【下面是我的7段中文】
+{粘贴7段中文}</pre>
+  </div>
+  <div class="prompt-card">
+    <h3>✏️ 单条精调（某条不满意时用）</h3>
+    <button class="copy-btn" onclick="copyPrompt('single')">复制</button>
+    <pre id="promptSingle">你是我的英语口语教练。下面这段话我想用英语说出来，但不知道怎么表达。
+
+我的英语水平A2-B1。请帮我转写成简单自然的英语口播稿。
+
+要求：
+- 每句不超过12个词
+- 只用一般现在时/过去时/进行时
+- 用最日常的词（比如happy不用delighted，tired不用exhausted）
+- 加上自然的语气停顿词（honestly, you know, I mean, like, actually）
+- 保留我原本的情绪——如果我难过就不要翻成冷静的叙述
+
+格式：
+英文稿：（每句一行）
+不会读的词：（标音标+简单解释）
+
+我的中文：
+{粘贴中文}</pre>
+  </div>
+  <div class="prompt-card">
+    <h3>🗣 口语化润色（AI稿太书面时用）</h3>
+    <button class="copy-btn" onclick="copyPrompt('oral')">复制</button>
+    <pre id="promptOral">下面这段英文太像课本英语了，请帮我改成真正的口语——就像我坐在朋友对面说话一样自然。
+
+要求：
+- 用口语常用缩写（I'm / don't / wanna / gonna / kinda）
+- 加入自然停顿词（like, you know, I mean, honestly, actually, well）
+- 可以用不完整句子开头（"So...", "And then...", "But yeah..."）
+- 每句不超过12个词
+- 读出来要有节奏感——该快的地方短句连击，该慢的地方拉长
+
+原文：
+{粘贴太书面的英文}</pre>
+  </div>
+  <div class="prompt-card">
+    <h3>📊 周复盘助手</h3>
+    <button class="copy-btn" onclick="copyPrompt('review')">复制</button>
+    <pre id="promptReview">你是一个内容策略师。我在做一个英语情感口播账号，以下是这周7条视频的数据。
+
+请帮我分析：
+1. 哪条数据最好？为什么观众喜欢？（选题？情绪？标题？）
+2. 哪条数据最差？可能的原因？
+3. 下周话题方向建议（基于本周表现，推荐3个具体话题）
+4. 我的英语表达有没有明显的进步或需要改进的地方？（如果你能从标题看出）
+
+本周数据：
+Day1 / {话题} / 播放___ 点赞___ 评论___ 收藏___
+Day2 / {话题} / 播放___ 点赞___ 评论___ 收藏___
+Day3 / {话题} / 播放___ 点赞___ 评论___ 收藏___
+Day4 / {话题} / 播放___ 点赞___ 评论___ 收藏___
+Day5 / {话题} / 播放___ 点赞___ 评论___ 收藏___
+Day6 / {话题} / 播放___ 点赞___ 评论___ 收藏___
+Day7 / {话题} / 播放___ 点赞___ 评论___ 收藏___</pre>
+  </div>
+</div>
+
+<!-- ===== 进度页面 ===== -->
+<div id="pageStats" class="page">
+  <div class="card">
+    <h2>📈 总体数据</h2>
+    <div class="stat-row"><span>总发布数</span><span class="stat-value" id="statTotal">0</span></div>
+    <div class="stat-row"><span>连续天数</span><span class="stat-value" id="statStreak">0</span></div>
+    <div class="stat-row"><span>本周完成</span><span class="stat-value" id="statWeek">0/7</span></div>
+    <div class="stat-row"><span>粉丝数</span><span class="stat-value"><input type="number" id="statFans" value="0" style="width:70px;text-align:right;border:1px solid var(--border);border-radius:6px;padding:4px;" onchange="saveStats()"> 粉</span></div>
+  </div>
+  <div class="card">
+    <h2>🎯 里程碑</h2>
+    <div id="milestones"></div>
+  </div>
+  <div class="card">
+    <h2>🔄 重置</h2>
+    <button class="btn btn-outline btn-sm" onclick="resetAll()" style="width:100%;color:#c96b5a;">清空所有数据重新开始</button>
+  </div>
+</div>
+
+<!-- ===== 话题详情弹窗 ===== -->
+<div class="modal-overlay" id="topicModal" onclick="closeTopicDetail(event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-cat" id="modalCat"></div>
+    <div class="modal-en" id="modalEn"></div>
+    <div class="modal-zh" id="modalZh"></div>
+    <h3>💭 对这个话题的初步想法</h3>
+    <textarea class="modal-thoughts" id="modalThoughts" placeholder="想到什么就写...比如：我可以从自己小时候的经历说起..."></textarea>
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeTopicDetail()">返回</button>
+      <button class="btn btn-primary" id="modalUseBtn" onclick="confirmUseTopic()">选这个话题</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ============ APP STATE ============
+const STEPS = [
+  { id: 'getScript', text: '拿AI翻译稿', time: '1min' },
+  { id: 'rewrite', text: '改成你的话 ⭐ 关键步骤', time: '8min' },
+  { id: 'practice', text: '大声练2遍', time: '5min' },
+  { id: 'record', text: '正式录制 1-3分钟', time: '10min' },
+  { id: 'edit', text: '剪映字幕 + 写标题', time: '5min' },
+  { id: 'publish', text: '小红书 + 抖音发布', time: '1min' },
+];
+const ALL_TOPICS = [
+  { idx:1, cat:'情绪', en:'Why I find it easier to say "I\'m not okay" in English', zh:'为什么我用英语说"我不太好"更容易' },
+  { idx:2, cat:'情绪', en:'The feelings I couldn\'t name until I was 24', zh:'那些我24岁才学会命名的情绪' },
+  { idx:3, cat:'情绪', en:'What "being sensitive" really means to me', zh:'高敏感对我来说到底意味着什么' },
+  { idx:4, cat:'情绪', en:'I cry easily. Is that weakness or strength?', zh:'我爱哭，这是软弱还是力量' },
+  { idx:5, cat:'情绪', en:'Days when I feel empty for no reason', zh:'那些没有理由就很空的日子' },
+  { idx:6, cat:'情绪', en:'The pressure of being "a good girl" in a Chinese family', zh:'在中国家庭里做"好女孩"的压力' },
+  { idx:7, cat:'情绪', en:'Why I\'m scared of being ordinary', zh:'我为什么害怕平庸' },
+  { idx:8, cat:'情绪', en:'What I wish someone told me at 18', zh:'多希望18岁时有人告诉我这些' },
+  { idx:9, cat:'情绪', en:'I don\'t know what I want. That\'s okay.', zh:'不知道自己要什么，没关系' },
+  { idx:10, cat:'情绪', en:'The difference between lonely and alone', zh:'孤独和独处的区别' },
+  { idx:11, cat:'情绪', en:'Why I overthink everything at 2am', zh:'为什么我凌晨2点什么都想' },
+  { idx:12, cat:'情绪', en:'Things I\'m too proud to say out loud', zh:'那些我太骄傲说不出口的事' },
+  { idx:13, cat:'情绪', en:'When did you last feel truly proud of yourself?', zh:'你上次真正为自己骄傲是什么时候' },
+  { idx:14, cat:'情绪', en:'I hate disappointing people. Here\'s why.', zh:'我讨厌让人失望，原因在这里' },
+  { idx:15, cat:'情绪', en:'The version of me that no one sees', zh:'没人见过的那个我' },
+  { idx:16, cat:'家庭', en:'How my parents show love without ever saying the word', zh:'我爸妈从来不说爱，但爱都在行动里' },
+  { idx:17, cat:'家庭', en:'"Did you eat?" — the Chinese way of saying I love you', zh:'"吃了吗"——中国人说我爱你的方式' },
+  { idx:18, cat:'家庭', en:'Things my mom and I never talked about', zh:'我和我妈从未聊过的事' },
+  { idx:19, cat:'家庭', en:'Why talking to my dad feels so hard sometimes', zh:'为什么跟爸爸说话有时候这么难' },
+  { idx:20, cat:'家庭', en:'I love my family but I need to leave them', zh:'我爱我家，但我需要离开' },
+  { idx:21, cat:'家庭', en:'What I learned about relationships from watching my parents', zh:'从父母那里学到的关于关系的事' },
+  { idx:22, cat:'家庭', en:'The guilt of wanting a different life than my parents', zh:'想要和父母不同人生的内疚感' },
+  { idx:23, cat:'家庭', en:'Chinese parents don\'t apologize. How that shaped me.', zh:'中国父母不道歉，这如何塑造了我' },
+  { idx:24, cat:'家庭', en:'I\'m 25 and still seeking their approval', zh:'25岁了我还在寻求他们的认可' },
+  { idx:25, cat:'家庭', en:'The moment I realized my parents are just people', zh:'意识到父母也只是普通人的那一刻' },
+  { idx:26, cat:'跨文化', en:'Things about Chinese culture I didn\'t know were weird until I watched American shows', zh:'看了美剧才知道中国文化有多特别' },
+  { idx:27, cat:'跨文化', en:'Why I want to live abroad someday', zh:'为什么我将来想去海外生活' },
+  { idx:28, cat:'跨文化', en:'What "freedom" looks like in different cultures', zh:'不同文化里的"自由"长什么样' },
+  { idx:29, cat:'跨文化', en:'Things I envy about Western families', zh:'我羡慕西方家庭的哪些地方' },
+  { idx:30, cat:'跨文化', en:'Things I love about Chinese culture that I\'ll never give up', zh:'中国文化里我永远不会放弃的东西' },
+  { idx:31, cat:'跨文化', en:'English gives me a different personality', zh:'英语给了我一个不同的人格' },
+  { idx:32, cat:'跨文化', en:'How my voice changes when I switch languages', zh:'切换语言时，我的声音变了' },
+  { idx:33, cat:'跨文化', en:'The China I want the world to know about', zh:'我想让世界了解的那个中国' },
+  { idx:34, cat:'身体', en:'Being a 174cm "slightly chubby" girl in China', zh:'在中国做一个174cm微胖女孩' },
+  { idx:35, cat:'身体', en:'My relationship with the mirror', zh:'我和镜子的关系' },
+  { idx:36, cat:'身体', en:'Why I used to hate my body (and how I\'m unlearning that)', zh:'我为什么曾经讨厌自己的身体' },
+  { idx:37, cat:'身体', en:'The pressure of beauty standards', zh:'审美标准的压力' },
+  { idx:38, cat:'身体', en:'Clothes that make me feel powerful', zh:'让我觉得自己有力量的衣服' },
+  { idx:39, cat:'身体', en:'I don\'t need to be skinny to be beautiful', zh:'我不需要变瘦才美' },
+  { idx:40, cat:'身体', en:'Things I wish I could tell my 16-year-old self about her body', zh:'想对16岁的自己说的话' },
+  { idx:41, cat:'爱情', en:'What 耽美 novels taught me about love', zh:'耽美小说教我的关于爱的事' },
+  { idx:42, cat:'爱情', en:'Why I love stories about two men falling in love', zh:'为什么我喜欢看两个男人相爱的故事' },
+  { idx:43, cat:'爱情', en:'My idea of love is probably unrealistic', zh:'我对爱的想象可能太不现实了' },
+  { idx:44, cat:'爱情', en:'The love I want vs the love I see around me', zh:'我想要的爱情 vs 我身边看到的' },
+  { idx:45, cat:'爱情', en:'Why Chinese dating culture exhausts me', zh:'为什么中国约会文化让我很累' },
+  { idx:46, cat:'爱情', en:'I want a partner who sees my soft side', zh:'我想要一个能看到我柔软面的伴侣' },
+  { idx:47, cat:'爱情', en:'The most romantic thing I\'ve ever witnessed', zh:'我见过的最浪漫的事' },
+  { idx:48, cat:'爱情', en:'Why I\'m scared of being vulnerable in relationships', zh:'为什么我在关系里害怕脆弱' },
+  { idx:49, cat:'工作', en:'Being an auditor at 25: what I actually do all day', zh:'25岁的审计人：我每天到底在做什么' },
+  { idx:50, cat:'工作', en:'Why I don\'t want to do this forever', zh:'为什么我不想一辈子做这个' },
+  { idx:51, cat:'工作', en:'The Sunday scaries are real', zh:'周日恐惧症是真实存在的' },
+  { idx:52, cat:'工作', en:'CPA studying is destroying me (but I\'m still going)', zh:'CPA备考在摧毁我（但我还在坚持）' },
+  { idx:53, cat:'工作', en:'What "success" means to me (it keeps changing)', zh:'"成功"对我的意义一直在变' },
+  { idx:54, cat:'工作', en:'I want to make money doing something I actually like', zh:'我想做喜欢的事赚钱' },
+  { idx:55, cat:'工作', en:'The courage to start over at 25', zh:'25岁重新开始的勇气' },
+  { idx:56, cat:'工作', en:'Why I started this account (the real reason)', zh:'我开这个账号的真正原因' },
+  { idx:57, cat:'工作', en:'Skills I\'m building for my future self', zh:'我在为未来的自己积累什么能力' },
+  { idx:58, cat:'工作', en:'What "复利" means to me — compound growth in life', zh:'复利对我的意义' },
+  { idx:59, cat:'工作', en:'My 30-year-old self, I\'m working for you', zh:'致30岁的我，我正在为你努力' },
+  { idx:60, cat:'日常', en:'A random Tuesday in my life (in broken English)', zh:'我生活中的某个周二' },
+  { idx:61, cat:'日常', en:'What\'s in my bag as an auditor', zh:'审计人的包里有什么' },
+  { idx:62, cat:'日常', en:'My post-work ritual to stay sane', zh:'下班后保持清醒的小习惯' },
+  { idx:63, cat:'日常', en:'Small things that make me happy', zh:'让我开心的小事' },
+  { idx:64, cat:'日常', en:'What I eat when I\'m too tired to cook', zh:'累到不想做饭时我吃什么' },
+  { idx:65, cat:'日常', en:'A letter to my future self', zh:'给未来自己的一封信' },
+  { idx:66, cat:'情绪', en:'Why I feel guilty when I rest', zh:'为什么休息的时候我会感到内疚' },
+  { idx:67, cat:'情绪', en:'The art of being gentle with yourself', zh:'对自己温柔是一门艺术' },
+  { idx:68, cat:'情绪', en:'Things I do when anxiety hits', zh:'焦虑来袭时我做的事' },
+  { idx:69, cat:'情绪', en:'Why admitting I need help was the bravest thing', zh:'承认我需要帮助是最勇敢的事' },
+  { idx:70, cat:'情绪', en:'I am more than my productivity', zh:'我的价值不只是我的产出' },
+  { idx:71, cat:'家庭', en:'The weight of being the "successful child"', zh:'做"有出息的孩子"的压力' },
+  { idx:72, cat:'家庭', en:'Why I can\'t cry in front of my family', zh:'为什么我在家人面前哭不出来' },
+  { idx:73, cat:'家庭', en:'Things I inherited from my mom that I didn\'t choose', zh:'那些我无意中从妈妈身上学到的事' },
+  { idx:74, cat:'家庭', en:'Growing up in a home where emotions weren\'t discussed', zh:'在一个不聊情绪的家庭长大' },
+  { idx:75, cat:'家庭', en:'The day I stopped blaming my parents', zh:'我不再责怪父母的那一天' },
+  { idx:76, cat:'跨文化', en:'What "having face" really means in Chinese culture', zh:'"面子"在中国文化里到底意味着什么' },
+  { idx:77, cat:'跨文化', en:'Things I learned about myself after watching Western TV for 10 years', zh:'看了10年美剧后我对自己有了新认识' },
+  { idx:78, cat:'跨文化', en:'Why I feel more confident speaking English to strangers', zh:'为什么我跟陌生人说英语更自信' },
+  { idx:79, cat:'跨文化', en:'The differences in how we say "no"', zh:'说"不"的方式有多不同' },
+  { idx:80, cat:'跨文化', en:'What I wish Westerners understood about Chinese girls', zh:'我希望西方人了解中国女孩的哪些事' },
+  { idx:81, cat:'身体', en:'Learning to take up space as a tall girl', zh:'学会作为一个高个子女生占据空间' },
+  { idx:82, cat:'身体', en:'My body is not an apology', zh:'我的身体不需要道歉' },
+  { idx:83, cat:'身体', en:'Why I stopped following "perfect body" accounts', zh:'为什么我取关了那些"完美身材"账号' },
+  { idx:84, cat:'身体', en:'The joy of wearing clothes that actually fit', zh:'穿上真正合身的衣服的快乐' },
+  { idx:85, cat:'爱情', en:'Why healthy love feels boring at first', zh:'为什么健康的爱一开始感觉无聊' },
+  { idx:86, cat:'爱情', en:'I used to confuse drama with passion', zh:'我曾经把 drama 当成激情' },
+  { idx:87, cat:'爱情', en:'Learning what I deserve in a relationship', zh:'在关系里学会我值得什么' },
+  { idx:88, cat:'爱情', en:'Why I\'d rather be single than settle', zh:'为什么我宁可单身也不凑合' },
+  { idx:89, cat:'爱情', en:'The intimacy of being truly seen', zh:'被真正看见的亲密感' },
+  { idx:90, cat:'工作', en:'What burnout taught me about my limits', zh:'职业倦怠教会我关于自己的极限' },
+  { idx:91, cat:'工作', en:'Why I\'m building something outside of my 9-to-5', zh:'为什么我在朝九晚五之外构建自己的东西' },
+  { idx:92, cat:'工作', en:'The difference between a job and a calling', zh:'工作和使命的区别' },
+  { idx:93, cat:'工作', en:'Money can\'t be the only reason I wake up', zh:'钱不能是我起床的唯一理由' },
+  { idx:94, cat:'工作', en:'Learning to say no at work without guilt', zh:'学会在工作中不内疚地说不' },
+  { idx:95, cat:'日常', en:'My morning routine when I actually wake up early', zh:'真的早起时我的早晨日常' },
+  { idx:96, cat:'日常', en:'Things in my room that spark joy', zh:'我房间里让我开心的小东西' },
+  { idx:97, cat:'日常', en:'A love letter to rainy days', zh:'给雨天的一封情书' },
+  { idx:98, cat:'日常', en:'What I learned from keeping this English account for 30 days', zh:'坚持这个英语账号30天我学到了什么' },
+  { idx:99, cat:'日常', en:'The beauty of being a work in progress', zh:'做一个未完成作品的美' },
+  { idx:100, cat:'日常', en:'If I could tell the world one thing in English...', zh:'如果我能用英语告诉世界一件事...' },
+];
+
+// ============ LOAD / SAVE ============
+function loadData() {
+  const raw = localStorage.getItem('xixi_english_daily');
+  return raw ? JSON.parse(raw) : {};
+}
+function saveData(data) {
+  localStorage.setItem('xixi_english_daily', JSON.stringify(data));
+}
+function getToday() { return new Date().toISOString().split('T')[0]; }
+function getWeekKey() {
+  const d = new Date();
+  const day = d.getDay() || 7;
+  const monday = new Date(d);
+  monday.setDate(d.getDate() - day + 1);
+  return monday.toISOString().split('T')[0];
+}
+
+// ============ PAGE SWITCH ============
+function switchPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('page' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
+  document.getElementById('nav' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
+  if (name === 'today') renderToday();
+  if (name === 'stats') renderStats();
+  if (name === 'topics') {
+    document.getElementById('topicNormalView').style.display = 'block';
+    document.getElementById('topicPickerView').style.display = 'none';
+    document.getElementById('topicWorkbenchView').style.display = 'none';
+    renderTopics('all');
+    renderInspirations();
+  }
+}
+
+// ============ TODAY PAGE ============
+function renderToday() {
+  const data = loadData();
+  const today = getToday();
+  const weekKey = getWeekKey();
+  const checks = data[today]?.checks || {};
+  const allDone = STEPS.every(s => checks[s.id]);
+
+  // Streak
+  let streak = 0;
+  const d = new Date();
+  for (let i = 0; i < 365; i++) {
+    const key = d.toISOString().split('T')[0];
+    if (data[key]?.allDone) { streak++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  document.getElementById('streak').textContent = streak;
+
+  // Week progress
+  let weekDone = 0;
+  for (let i = 0; i < 7; i++) {
+    const wd = new Date(weekKey);
+    wd.setDate(wd.getDate() + i);
+    if (data[wd.toISOString().split('T')[0]]?.allDone) weekDone++;
+  }
+  document.getElementById('weekDone').textContent = weekDone;
+  document.getElementById('weekProgress').style.width = (weekDone / 7 * 100) + '%';
+  document.getElementById('headerSub').textContent = allDone ? '今天完成啦 ✅' : '今天录了吗？';
+
+  // Steps
+  let stepsHtml = '';
+  STEPS.forEach((s, i) => {
+    const checked = checks[s.id] ? 'checked' : '';
+    const doneClass = checks[s.id] ? 'done' : '';
+    stepsHtml += `
+      <div class="step">
+        <input type="checkbox" id="chk_${s.id}" ${checked} onchange="toggleStep('${s.id}')">
+        <label for="chk_${s.id}" class="${doneClass}">${s.text}</label>
+        <span class="time-badge">${s.time}</span>
+      </div>`;
+  });
+  document.getElementById('dailySteps').innerHTML = stepsHtml;
+}
+
+function toggleStep(stepId) {
+  const data = loadData();
+  const today = getToday();
+  if (!data[today]) data[today] = { checks: {} };
+  data[today].checks[stepId] = !data[today].checks[stepId];
+  const allDone = STEPS.every(s => data[today].checks[s.id]);
+  data[today].allDone = allDone;
+  saveData(data);
+  renderToday();
+}
+
+function checkAllDone() {
+  const data = loadData();
+  const today = getToday();
+  if (!data[today]) data[today] = { checks: {} };
+  STEPS.forEach(s => { data[today].checks[s.id] = true; });
+  data[today].allDone = true;
+  saveData(data);
+  renderToday();
+  showToast('🎉 今日全部完成！溪溪真棒！');
+}
+
+// ============ TIMER ============
+let timerSeconds = 0;
+let timerInterval = null;
+let timerRunning = false;
+
+function toggleTimer() {
+  if (timerRunning) { pauseTimer(); return; }
+  timerRunning = true;
+  document.getElementById('timerStart').textContent = '暂停';
+  timerInterval = setInterval(() => {
+    timerSeconds++;
+    const m = Math.floor(timerSeconds / 60);
+    const s = timerSeconds % 60;
+    document.getElementById('timerDisplay').textContent =
+      String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }, 1000);
+}
+
+function pauseTimer() {
+  timerRunning = false;
+  document.getElementById('timerStart').textContent = '继续';
+  clearInterval(timerInterval);
+}
+
+function resetTimer() {
+  pauseTimer();
+  timerSeconds = 0;
+  document.getElementById('timerDisplay').textContent = '00:00';
+  document.getElementById('timerStart').textContent = '开始';
+}
+
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('preset-btn')) {
+    const mins = parseInt(e.target.dataset.min);
+    timerSeconds = mins * 60;
+    const m = Math.floor(timerSeconds / 60);
+    const s = timerSeconds % 60;
+    document.getElementById('timerDisplay').textContent =
+      String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    if (timerRunning) { pauseTimer(); }
+  }
+});
+
+// ============ TOPICS ============
+function renderTopics(cat) {
+  const filtered = cat === 'all' ? ALL_TOPICS : ALL_TOPICS.filter(t => t.cat === cat);
+  let html = '';
+  filtered.forEach(t => {
+    html += `<div class="topic-item topic-item-clickable" onclick="openTopicDetail(${t.idx})">
+      <div style="flex:1;min-width:0;">
+        <span class="cat">${t.cat}</span>
+        <div style="font-size:14px;font-weight:600;margin-top:4px;word-break:break-word;">${t.en}</div>
+        <div style="font-size:12px;color:var(--sub);margin-top:2px;">${t.zh}</div>
+      </div>
+      <span style="font-size:18px;color:var(--accent-light);flex-shrink:0;">→</span>
+    </div>`;
+  });
+  document.getElementById('topicsList').innerHTML = html;
+
+  // Week topics - clickable day rows
+  const weekKey = getWeekKey();
+  const data = loadData();
+  const dayNames = ['周一','周二','周三','周四','周五','周六','周日'];
+  let weekHtml = '';
+  for (let i = 0; i < 7; i++) {
+    const wd = new Date(weekKey);
+    wd.setDate(wd.getDate() + i);
+    const key = wd.toISOString().split('T')[0];
+    const topic = data[key]?.topic || '';
+    const topicZh = data[key]?.topicZh || '';
+    const hasTopic = !!topic;
+    const isToday = key === getToday();
+    const onClick = hasTopic
+      ? `openTopicWorkbench('${key}','${dayNames[i]}')`
+      : `openTopicPicker('${key}','${dayNames[i]}')`;
+    const arrow = hasTopic ? '✏️' : '🎲';
+    const display = hasTopic
+      ? `<span style="font-weight:600;color:var(--text);">${topic}</span><br><span style="font-size:11px;color:var(--sub);">${topicZh}</span>`
+      : '<span style="color:var(--sub);">点击抽话题 →</span>';
+    weekHtml += `<div class="week-day-row" onclick="${onClick}">
+      <span class="day-label">${dayNames[i]}${isToday ? '⭐' : ''}</span>
+      <span class="day-topic" style="${hasTopic ? 'white-space:normal;line-height:1.4;' : ''}">${display}</span>
+      <span class="day-arrow">${arrow}</span>
+    </div>`;
+  }
+  document.getElementById('weekTopicsList').innerHTML = weekHtml;
+}
+
+// ============ TOPIC PICKER + WORKBENCH ============
+let pickerDayKey = null;
+let pickerDayName = '';
+let wbDayKey = null;
+let wbDayName = '';
+let currentAccumTab = 'words';
+
+function openTopicPicker(dayKey, dayName) {
+  pickerDayKey = dayKey;
+  pickerDayName = dayName;
+  document.getElementById('topicNormalView').style.display = 'none';
+  document.getElementById('topicPickerView').style.display = 'block';
+  document.getElementById('topicWorkbenchView').style.display = 'none';
+  document.getElementById('pickerTitle').textContent = '为 ' + dayName + ' 选话题';
+  shufflePickerTopics();
+}
+
+function closeTopicPicker() {
+  document.getElementById('topicNormalView').style.display = 'block';
+  document.getElementById('topicPickerView').style.display = 'none';
+  pickerDayKey = null;
+  renderTopics(document.querySelector('.cat-filter-btn.active')?.dataset?.cat || 'all');
+}
+
+function shufflePickerTopics() {
+  const shuffled = [...ALL_TOPICS].sort(() => Math.random() - 0.5);
+  const picks = shuffled.slice(0, 8);
+  let html = '';
+  picks.forEach(t => {
+    html += `<div class="picker-topic-card" onclick="pickTopicForDay('${t.en.replace(/'/g, "\\'")}', '${t.zh.replace(/'/g, "\\'")}', '${t.cat}')">
+      <span class="pt-cat">${t.cat}</span>
+      <div class="pt-en">${t.en}</div>
+      <div class="pt-zh">${t.zh}</div>
+    </div>`;
+  });
+  document.getElementById('pickerTopicList').innerHTML = html;
+}
+
+function pickTopicForDay(topicEn, topicZh, topicCat) {
+  if (!pickerDayKey) return;
+  const data = loadData();
+  if (!data[pickerDayKey]) data[pickerDayKey] = { checks: {} };
+  data[pickerDayKey].topic = topicEn;
+  data[pickerDayKey].topicZh = topicZh;
+  data[pickerDayKey].topicCat = topicCat;
+  saveData(data);
+  // After picking, open workbench
+  const dayName = pickerDayName;
+  const dayKey = pickerDayKey;
+  closeTopicPickerQuick();
+  openTopicWorkbench(dayKey, dayName);
+}
+
+function closeTopicPickerQuick() {
+  document.getElementById('topicNormalView').style.display = 'block';
+  document.getElementById('topicPickerView').style.display = 'none';
+  pickerDayKey = null;
+}
+
+// ===== WORKBENCH =====
+function openTopicWorkbench(dayKey, dayName) {
+  wbDayKey = dayKey;
+  wbDayName = dayName;
+  const data = loadData();
+  const dayData = data[dayKey] || {};
+
+  document.getElementById('topicNormalView').style.display = 'none';
+  document.getElementById('topicPickerView').style.display = 'none';
+  document.getElementById('topicWorkbenchView').style.display = 'block';
+  document.getElementById('wbDayTitle').textContent = dayName + ' · 话题工作台';
+
+  // Topic info
+  const cat = dayData.topicCat || '';
+  document.getElementById('wbTopicContent').innerHTML = `
+    ${cat ? '<span class="wb-cat">' + cat + '</span>' : ''}
+    <div class="wb-en">${dayData.topic || '(未选择话题)'}</div>
+    <div class="wb-zh">${dayData.topicZh || ''}</div>
+  `;
+
+  // Thoughts and script
+  document.getElementById('wbThoughts').value = dayData.thoughts || '';
+  document.getElementById('wbScript').value = dayData.script || '';
+
+  // Init accumulation if needed
+  if (!data[dayKey]) data[dayKey] = { checks: {}, accumulation: { words: [], expressions: [], grammar: [] } };
+  if (!data[dayKey].accumulation) data[dayKey].accumulation = { words: [], expressions: [], grammar: [] };
+  saveData(data);
+  currentAccumTab = 'words';
+  switchAccumTab('words');
+}
+
+function closeTopicWorkbench() {
+  saveWorkbenchSilent();
+  document.getElementById('topicNormalView').style.display = 'block';
+  document.getElementById('topicWorkbenchView').style.display = 'none';
+  wbDayKey = null;
+  renderTopics(document.querySelector('.cat-filter-btn.active')?.dataset?.cat || 'all');
+}
+
+function saveWorkbenchSilent() {
+  if (!wbDayKey) return;
+  const data = loadData();
+  if (!data[wbDayKey]) data[wbDayKey] = { checks: {}, accumulation: { words: [], expressions: [], grammar: [] } };
+  data[wbDayKey].thoughts = document.getElementById('wbThoughts').value;
+  data[wbDayKey].script = document.getElementById('wbScript').value;
+  // Collect rows
+  data[wbDayKey].accumulation = {
+    words: collectWordRows(),
+    expressions: collectExprRows(),
+    grammar: collectGrammarRows()
+  };
+  saveData(data);
+}
+
+function saveWorkbench() {
+  saveWorkbenchSilent();
+  showToast('已保存 ✅');
+}
+
+// ===== ROW-BASED ACCUMULATION =====
+function switchAccumTab(tab) {
+  currentAccumTab = tab;
+  const suffix = { words: 'Words', expressions: 'Expr', grammar: 'Grammar' };
+  ['words','expressions','grammar'].forEach(t => {
+    document.getElementById('accumTab' + suffix[t]).classList.toggle('active', t === tab);
+    document.getElementById('accumPanel' + suffix[t]).style.display = t === tab ? 'block' : 'none';
+  });
+  renderRows(tab);
+}
+
+function renderRows(type) {
+  const data = loadData();
+  const items = data[wbDayKey]?.accumulation?.[type] || [];
+  const containerId = type === 'words' ? 'wordRows' : type === 'expressions' ? 'exprRows' : 'grammarRows';
+
+  if (items.length === 0) {
+    // Start with one empty row
+    if (type === 'words') {
+      document.getElementById(containerId).innerHTML = makeWordRow('', '');
+    } else if (type === 'expressions') {
+      document.getElementById(containerId).innerHTML = makeExprRow('', '');
+    } else {
+      document.getElementById(containerId).innerHTML = makeGrammarRow('', '');
+    }
+  } else {
+    let html = '';
+    items.forEach((item, i) => {
+      if (type === 'words') {
+        html += makeWordRow(item.word, item.meaning);
+      } else if (type === 'expressions') {
+        html += makeExprRow(item.text || '', item.zh || '');
+      } else {
+        html += makeGrammarRow(item.point || '', item.note || '');
+      }
+    });
+    document.getElementById(containerId).innerHTML = html;
+  }
+}
+
+function makeWordRow(word, meaning) {
+  return `<div class="input-row">
+    <input type="text" class="word-en" placeholder="英文单词" value="${escHtml(word)}" style="flex:2;" oninput="autoTranslateWord(this)">
+    <input type="text" class="word-zh" placeholder="中文意思" value="${escHtml(meaning)}" style="flex:1;">
+    <button class="translate-btn" onclick="translateWordBtn(this)" title="自动翻译">译</button>
+    <button class="row-delete" onclick="this.closest('.input-row').remove()">×</button>
+  </div>`;
+}
+
+function makeExprRow(text, zh) {
+  return `<div class="input-row">
+    <input type="text" class="expr-en" placeholder="英文表达/句子" value="${escHtml(text)}" style="flex:2;">
+    <input type="text" class="expr-zh" placeholder="中文翻译" value="${escHtml(zh)}" style="flex:2;">
+    <button class="row-delete" onclick="this.closest('.input-row').remove()">×</button>
+  </div>`;
+}
+
+function makeGrammarRow(point, note) {
+  return `<div class="input-row">
+    <input type="text" class="grammar-point" placeholder="语法知识点" value="${escHtml(point)}" style="flex:2;">
+    <input type="text" class="grammar-note" placeholder="例句或备注" value="${escHtml(note)}" style="flex:2;">
+    <button class="row-delete" onclick="this.closest('.input-row').remove()">×</button>
+  </div>`;
+}
+
+function addWordRow() {
+  const container = document.getElementById('wordRows');
+  container.insertAdjacentHTML('beforeend', makeWordRow('', ''));
+}
+
+function addExprRow() {
+  const container = document.getElementById('exprRows');
+  container.insertAdjacentHTML('beforeend', makeExprRow('', ''));
+}
+
+function addGrammarRow() {
+  const container = document.getElementById('grammarRows');
+  container.insertAdjacentHTML('beforeend', makeGrammarRow('', ''));
+}
+
+function collectWordRows() {
+  const rows = document.querySelectorAll('#wordRows .input-row');
+  const result = [];
+  rows.forEach(row => {
+    const en = row.querySelector('.word-en')?.value?.trim();
+    const zh = row.querySelector('.word-zh')?.value?.trim();
+    if (en) result.push({ word: en, meaning: zh || '' });
+  });
+  return result;
+}
+
+function collectExprRows() {
+  const rows = document.querySelectorAll('#exprRows .input-row');
+  const result = [];
+  rows.forEach(row => {
+    const en = row.querySelector('.expr-en')?.value?.trim();
+    const zh = row.querySelector('.expr-zh')?.value?.trim();
+    if (en || zh) result.push({ text: en || '', zh: zh || '' });
+  });
+  return result;
+}
+
+function collectGrammarRows() {
+  const rows = document.querySelectorAll('#grammarRows .input-row');
+  const result = [];
+  rows.forEach(row => {
+    const point = row.querySelector('.grammar-point')?.value?.trim();
+    const note = row.querySelector('.grammar-note')?.value?.trim();
+    if (point) result.push({ point, note: note || '' });
+  });
+  return result;
+}
+
+// ===== AUTO-TRANSLATE =====
+let translateTimer = null;
+
+function autoTranslateWord(inputEl) {
+  clearTimeout(translateTimer);
+  const word = inputEl.value.trim();
+  if (word.length < 2) return;
+  translateTimer = setTimeout(() => {
+    const row = inputEl.closest('.input-row');
+    const zhInput = row?.querySelector('.word-zh');
+    if (!zhInput || zhInput.value) return;
+    doTranslate(word, row);
+  }, 600);
+}
+
+function translateWordBtn(btn) {
+  const row = btn.closest('.input-row');
+  const enInput = row?.querySelector('.word-en');
+  const word = enInput?.value?.trim();
+  if (!word) return;
+  doTranslate(word, row);
+}
+
+function doTranslate(word, row) {
+  const zhInput = row.querySelector('.word-zh');
+  const btn = row.querySelector('.translate-btn');
+  if (btn) btn.textContent = '...';
+
+  // Fetch Chinese translation + dictionary definition in parallel
+  Promise.all([
+    fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(word) + '&langpair=en|zh').then(r => r.json()).catch(() => null),
+    fetch('https://api.dictionaryapi.dev/api/v2/entries/en/' + encodeURIComponent(word)).then(r => r.json()).catch(() => null)
+  ]).then(([transData, dictData]) => {
+    let zh = '';
+    let pos = '';
+
+    // Chinese translation
+    if (transData?.responseData?.translatedText) {
+      zh = transData.responseData.translatedText;
+    }
+
+    // Part of speech from dictionary
+    if (Array.isArray(dictData) && dictData[0]?.meanings?.[0]) {
+      pos = dictData[0].meanings[0].partOfSpeech || '';
+      // Also try to get a more detailed definition
+      const def = dictData[0].meanings[0]?.definitions?.[0]?.definition || '';
+      if (def && def !== word) {
+        zh = zh || def;
+      }
+    }
+
+    // Build final display
+    let display = zh || '';
+    if (pos) {
+      const posMap = { noun: 'n.', verb: 'v.', adjective: 'adj.', adverb: 'adv.', preposition: 'prep.', conjunction: 'conj.', interjection: 'interj.', pronoun: 'pron.' };
+      const posCn = posMap[pos] || pos + '.';
+      display = '[' + posCn + '] ' + (zh || '(未找到翻译)');
+    } else if (display) {
+      display = '(未找到词性) ' + display;
+    } else {
+      display = '(请手动输入中文意思)';
+    }
+
+    if (!zhInput.value) zhInput.value = display;
+    if (btn) btn.textContent = '译';
+  }).catch(() => {
+    if (btn) btn.textContent = '译';
+  });
+}
+
+function escHtml(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+// Cat filter click handler
+document.addEventListener('click', function(e) {
+  const catBtn = e.target.closest('.cat-filter-btn');
+  if (catBtn) {
+    document.querySelectorAll('.cat-filter-btn').forEach(b => b.classList.remove('active'));
+    catBtn.classList.add('active');
+    renderTopics(catBtn.dataset.cat);
+  }
+});
+
+// ============ PROMPTS ============
+function copyPrompt(type) {
+  const el = document.getElementById('prompt' + type.charAt(0).toUpperCase() + type.slice(1));
+  navigator.clipboard.writeText(el.textContent).then(() => {
+    const btns = document.querySelectorAll('.copy-btn');
+    btns.forEach(b => { if (b.textContent === '复制') { b.textContent = '已复制!'; b.classList.add('copied'); setTimeout(() => { b.textContent = '复制'; b.classList.remove('copied'); }, 1500); } });
+    showToast('已复制到剪贴板 ✅');
+  });
+}
+
+// ============ STATS ============
+function renderStats() {
+  const data = loadData();
+  const weekKey = getWeekKey();
+  let total = 0, weekDone = 0, streak = 0;
+  const today = getToday();
+  const allKeys = Object.keys(data).filter(k => data[k]?.allDone);
+  total = allKeys.length;
+  const d = new Date();
+  for (let i = 0; i < 365; i++) {
+    const key = d.toISOString().split('T')[0];
+    if (data[key]?.allDone) { streak++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  for (let i = 0; i < 7; i++) {
+    const wd = new Date(weekKey);
+    wd.setDate(wd.getDate() + i);
+    if (data[wd.toISOString().split('T')[0]]?.allDone) weekDone++;
+  }
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statStreak').textContent = streak;
+  document.getElementById('statWeek').textContent = weekDone + '/7';
+  document.getElementById('statFans').value = data._fans || 0;
+
+  // Milestones
+  const milestones = [
+    { label: '完成第1条视频', reached: total >= 1 },
+    { label: '连续更新7天', reached: streak >= 7 },
+    { label: '连续更新30天', reached: streak >= 30 },
+    { label: '累计发布60条', reached: total >= 60 },
+    { label: '粉丝破500', reached: (data._fans||0) >= 500 },
+    { label: '粉丝破1000', reached: (data._fans||0) >= 1000 },
+    { label: '连续更新60天', reached: streak >= 60 },
+    { label: '累计发布100条', reached: total >= 100 },
+    { label: '粉丝破3000', reached: (data._fans||0) >= 3000 },
+    { label: '第一期陪跑营开营', reached: data._camp1 || false },
+  ];
+  let msHtml = '';
+  milestones.forEach(m => {
+    msHtml += `<div class="milestone ${m.reached ? 'reached' : 'pending'}">
+      <span class="icon">${m.reached ? '✅' : '⬜'}</span> ${m.label}
+    </div>`;
+  });
+  document.getElementById('milestones').innerHTML = msHtml;
+}
+
+function saveStats() {
+  const data = loadData();
+  data._fans = parseInt(document.getElementById('statFans').value) || 0;
+  saveData(data);
+  renderStats();
+  showToast('数据已保存 ✅');
+}
+
+function resetAll() {
+  if (confirm('确定要清空所有数据吗？这个操作不可恢复！')) {
+    localStorage.removeItem('xixi_english_daily');
+    renderToday();
+    renderStats();
+    showToast('已清空，重新开始吧！');
+  }
+}
+
+// ============ TOPIC DETAIL MODAL ============
+let currentDetailTopic = null;
+
+function openTopicDetail(idx) {
+  const t = ALL_TOPICS.find(tp => tp.idx === idx);
+  if (!t) return;
+  currentDetailTopic = t;
+  document.getElementById('modalCat').textContent = t.cat;
+  document.getElementById('modalEn').textContent = t.en;
+  document.getElementById('modalZh').textContent = t.zh;
+  document.getElementById('modalThoughts').value = '';
+  document.getElementById('topicModal').classList.add('show');
+}
+
+function closeTopicDetail(e) {
+  if (e && e.target !== document.getElementById('topicModal')) return;
+  document.getElementById('topicModal').classList.remove('show');
+  currentDetailTopic = null;
+}
+
+function confirmUseTopic() {
+  if (!currentDetailTopic) return;
+  const data = loadData();
+  const today = getToday();
+  if (!data[today]) data[today] = { checks: {} };
+  data[today].topic = currentDetailTopic.en;
+  // Save thoughts if any
+  const thoughts = document.getElementById('modalThoughts').value.trim();
+  if (thoughts) {
+    if (!data._inspirations) data._inspirations = [];
+    data._inspirations.unshift({
+      text: '💡 Re: ' + currentDetailTopic.en + '\n' + thoughts,
+      time: new Date().toLocaleString('zh-CN', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' })
+    });
+  }
+  saveData(data);
+  document.getElementById('topicModal').classList.remove('show');
+  switchPage('today');
+  showToast('已设为今日话题 ✅');
+}
+
+// ============ INSPIRATIONS ============
+function saveInspiration() {
+  const input = document.getElementById('inspirationInput');
+  const text = input.value.trim();
+  if (!text) { showToast('写点什么再保存吧~'); return; }
+  const data = loadData();
+  if (!data._inspirations) data._inspirations = [];
+  data._inspirations.unshift({
+    text: text,
+    time: new Date().toLocaleString('zh-CN', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' })
+  });
+  saveData(data);
+  input.value = '';
+  renderInspirations();
+  showToast('灵感已记录 💙');
+}
+
+function renderInspirations() {
+  const data = loadData();
+  const list = data._inspirations || [];
+  let html = '';
+  if (list.length === 0) {
+    html = '<div style="text-align:center;color:var(--sub);font-size:13px;padding:16px;">还没有灵感记录，想到什么就写下来吧</div>';
+  } else {
+    list.forEach((item, i) => {
+      html += `<div class="inspiration-item">
+        <div class="time">${item.time}</div>
+        <div>${item.text.replace(/\n/g, '<br>')}</div>
+        <button class="delete-inspo" onclick="deleteInspiration(${i})">×</button>
+      </div>`;
+    });
+    html += `<div style="text-align:center;margin-top:4px;font-size:11px;color:var(--sub);">共 ${list.length} 条灵感</div>`;
+  }
+  document.getElementById('inspirationList').innerHTML = html;
+}
+
+function deleteInspiration(index) {
+  const data = loadData();
+  if (!data._inspirations) return;
+  data._inspirations.splice(index, 1);
+  saveData(data);
+  renderInspirations();
+  showToast('已删除');
+}
+
+// ============ TOAST ============
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ============ INIT ============
+renderToday();
+renderInspirations();
+
+// Register service worker (only works on HTTP, not file://)
+if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
