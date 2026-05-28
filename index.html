@@ -599,11 +599,16 @@ nav button.active {
 }
 #toast.show { opacity: 1; }
 </style>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
 <header>
-  <h1>溪溪的英语账号</h1>
+  <h1>溪溪的英语账号 <span id="syncDot" style="font-size:10px;vertical-align:middle;" title="同步状态">☁️</span></h1>
   <p id="headerSub" style="transition: opacity 0.3s;">今天录了吗？</p>
 </header>
 
@@ -1098,13 +1103,75 @@ const ALL_TOPICS = [
   { idx:100, cat:'日常', en:'If I could tell the world one thing in English...', zh:'如果我能用英语告诉世界一件事...' },
 ];
 
-// ============ LOAD / SAVE ============
-function loadData() {
+// ============ FIREBASE CLOUD SYNC ============
+const fbConfig = {
+  apiKey: "AIzaSyB4U_8QaAOAf489VWJJfLG41_NHmWSymoU",
+  authDomain: "xixi-english.firebaseapp.com",
+  projectId: "xixi-english",
+  storageBucket: "xixi-english.firebasestorage.app",
+  messagingSenderId: "191160595482",
+  appId: "1:191160595482:web:ba2178504a93038292cda3"
+};
+firebase.initializeApp(fbConfig);
+const db = firebase.firestore();
+let fbUid = null;
+let syncReady = false;
+let syncTimer = null;
+
+// Anonymous sign-in
+firebase.auth().signInAnonymously().then(user => {
+  fbUid = user.user.uid;
+  // Pull cloud data on startup
+  return db.collection('users').doc(fbUid).get();
+}).then(doc => {
+  if (doc.exists && doc.data().appData) {
+    const cloud = doc.data().appData;
+    const local = loadLocal();
+    // Merge: cloud wins, but keep local if cloud is older (simple last-write-wins)
+    const merged = Object.assign({}, local, cloud);
+    localStorage.setItem('xixi_english_daily', JSON.stringify(merged));
+  }
+  syncReady = true;
+  updateSyncDot('green');
+  // Re-render current page
+  renderToday();
+}).catch(err => {
+  console.log('Firebase offline, using local data');
+  syncReady = true;
+  updateSyncDot('gray');
+});
+
+function updateSyncDot(color) {
+  const dot = document.getElementById('syncDot');
+  if (!dot) return;
+  dot.textContent = color === 'green' ? '☁️' : color === 'yellow' ? '🟡' : '⚪';
+}
+
+function syncToCloud() {
+  if (!fbUid || !syncReady) return;
+  const data = loadLocal();
+  updateSyncDot('yellow');
+  db.collection('users').doc(fbUid).set({ appData: data, updatedAt: new Date().toISOString() }, { merge: true })
+    .then(() => updateSyncDot('green'))
+    .catch(() => updateSyncDot('gray'));
+}
+
+function debouncedSync() {
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(syncToCloud, 1500);
+}
+
+// ============ LOAD / SAVE (wrapped with sync) ============
+function loadLocal() {
   const raw = localStorage.getItem('xixi_english_daily');
   return raw ? JSON.parse(raw) : {};
 }
+function loadData() {
+  return loadLocal();
+}
 function saveData(data) {
   localStorage.setItem('xixi_english_daily', JSON.stringify(data));
+  debouncedSync();
 }
 function getToday() { return new Date().toISOString().split('T')[0]; }
 function getWeekKey() {
