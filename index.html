@@ -803,83 +803,164 @@ nav button.active {
 <!-- ===== 提示词页面 ===== -->
 <div id="pagePrompts" class="page">
   <div class="prompt-card">
-    <h3>📦 周末批量翻译（推荐）</h3>
+    <h3>📦 周末批量翻译 + 学英语</h3>
     <button class="copy-btn" onclick="copyPrompt('batch')">复制</button>
-    <pre id="promptBatch">你是我的英语口语教练。我在做一个英语口播视频账号，每天录1-3分钟视频，用英语聊情感、成长、原生家庭、跨文化这些话题。
+    <pre id="promptBatch">你是我的英语老师和口播教练。我英语水平A2-B1，在做英语口播视频，聊情感、成长、原生家庭、跨文化话题。
 
-我的英语水平：A2-B1（能说简单句，但复杂一点就卡住。词汇量有限，不会用完成时和虚拟语气）。
+【双重任务】
+你同时做两件事：①帮我写口播稿 ②用稿子教我英语
 
-【你的任务】
-下面是我用中文随口说的7段话。请帮我转成我能流畅说出来的英语口语。不是"翻译"，是"转写"——把我内心想表达的意思，用我能驾驭的英语说出来。
+【写作要求】
+• 每句≤12词，超过就拆
+• 只用一般现在时/过去时/进行时——不要完成时
+• 用最常见词（sad不是melancholy）
+• 保留我的情绪和语气（停顿、犹豫、激动）
+• 结构：hook → 2-3段经历/感受 → 温柔结尾
 
-【具体要求】
-1. 词汇：用最常见的词。比如"悲伤"用sad不要用melancholy，"疲惫"用tired不要用exhausted
-2. 句子：每句不超过12个词。超过就拆成两句
-3. 时态：只用一般现在时、一般过去时、现在进行时。不要用完成时
-4. 语气：保留我说话的感觉——我停顿的地方留白，我激动的地方用短句，我犹豫的地方用maybe/I guess/I think
-5. 结构：开头1句hook，中间2-3段讲具体经历/感受，结尾1句总结
-
-【输出格式】
+【输出格式——每条包含学习和内容两部分】
 Day1 话题：{话题名}
----
-英文口播稿：
-（英文正文，每句一行，方便我读）
+━━━━━━━━━━
+🎙 口播稿：（每句一行）
 
-📝 发音笔记：
-• 难词1 /音标/ — 简单解释
-• 难词2 /音标/ — 简单解释
-• 难词3 /音标/ — 简单解释
----
+📚 从这篇稿子学英语：
+✏️ 今日词汇（3个）：
+• 单词 /音标/ → 中文 → 在本稿中的用法 → 再造一个日常句
+• （同上）
+• （同上）
 
-【下面是我的7段中文】
+📖 今日语法（1个）：
+这篇稿子用了一个重要的语法点：[语法名称]
+→ 稿中例句：...
+→ 简单解释：...
+→ 你自己试着用这个语法造一个关于你生活的句子
+
+🔊 发音重点：指出2个需要注意发音的词，说明嘴巴怎么动
+
+━━━━━━━━━━
+
+以下是我的7段中文：
 {粘贴7段中文}</pre>
   </div>
   <div class="prompt-card">
-    <h3>✏️ 单条精调（某条不满意时用）</h3>
+    <h3>✏️ 单条精调 + 学习笔记</h3>
     <button class="copy-btn" onclick="copyPrompt('single')">复制</button>
-    <pre id="promptSingle">你是我的英语口语教练。下面这段话我想用英语说出来，但不知道怎么表达。
+    <pre id="promptSingle">你是我的英语老师兼口播教练。我A2-B1水平。
 
-我的英语水平A2-B1。请帮我转写成简单自然的英语口播稿。
+帮我转写这段中文想法 → 简单自然的英语口播稿，每句≤12词，只用一般现在时/过去时/进行时。
 
-要求：
-- 每句不超过12个词
-- 只用一般现在时/过去时/进行时
-- 用最日常的词（比如happy不用delighted，tired不用exhausted）
-- 加上自然的语气停顿词（honestly, you know, I mean, like, actually）
-- 保留我原本的情绪——如果我难过就不要翻成冷静的叙述
+【输出】
+🎙 口播稿：（每句一行）
 
-格式：
-英文稿：（每句一行）
-不会读的词：（标音标+简单解释）
+📚 学习笔记：
+• 这篇稿子用了哪些B1以上的词？列出来+音标+中文
+• 找出一个你可以迁移到其他话题的万能句型（比如 "I grew up in a home where..."）
+• 如果我想用完成时说其中一句话，应该怎么改？（展示对比，但我录的时候用简单版）
+
+🔊 不会读的词：标音标
 
 我的中文：
 {粘贴中文}</pre>
   </div>
   <div class="prompt-card">
-    <h3>🗣 口语化润色（AI稿太书面时用）</h3>
+    <h3>🗣 口语化润色 + 学到了什么</h3>
     <button class="copy-btn" onclick="copyPrompt('oral')">复制</button>
-    <pre id="promptOral">下面这段英文太像课本英语了，请帮我改成真正的口语——就像我坐在朋友对面说话一样自然。
+    <pre id="promptOral">把下面这段英文改成真正的口语——每句≤12词，加停顿词（like, you know, I mean, actually），用缩写（wanna/gonna/kinda/ain't）。
 
-要求：
-- 用口语常用缩写（I'm / don't / wanna / gonna / kinda）
-- 加入自然停顿词（like, you know, I mean, honestly, actually, well）
-- 可以用不完整句子开头（"So...", "And then...", "But yeah..."）
-- 每句不超过12个词
-- 读出来要有节奏感——该快的地方短句连击，该慢的地方拉长
+【同时告诉我】
+• 改动总结：你改了哪些地方？为什么要改？（比如"把 written form 改成 spoken form 是因为...")
+• 我学到了什么口语技巧？（2-3条，以后写稿可以记住）
 
 原文：
 {粘贴太书面的英文}</pre>
   </div>
   <div class="prompt-card">
-    <h3>📊 周复盘助手</h3>
-    <button class="copy-btn" onclick="copyPrompt('review')">复制</button>
-    <pre id="promptReview">你是一个内容策略师。我在做一个英语情感口播账号，以下是这周7条视频的数据。
+    <h3>🎬 每日脚本 + 英语课（最常用）</h3>
+    <button class="copy-btn" onclick="copyPrompt('script')">复制</button>
+    <pre id="promptScript">你是我的英语老师兼口播脚本教练。我A2-B1水平。
 
-请帮我分析：
-1. 哪条数据最好？为什么观众喜欢？（选题？情绪？标题？）
-2. 哪条数据最差？可能的原因？
-3. 下周话题方向建议（基于本周表现，推荐3个具体话题）
-4. 我的英语表达有没有明显的进步或需要改进的地方？（如果你能从标题看出）
+【我的话题】
+（英文）{粘贴英文话题}
+（中文）{粘贴中文话题}
+
+【我对这个话题的想法】
+{粘贴灵感想法}
+
+【双重任务】
+1. 帮我写1-3分钟英语口播稿
+2. 用这篇稿子给我上一堂迷你英语课
+
+【写作要求】
+• 每句≤12词 | 只用现在时/过去时/进行时 | 最日常的词
+• Hook用问题或个人故事开头 → 2-3段感受 → 温柔结尾
+• 保留情绪——难过就说难过，别压成平淡叙述
+
+【输出格式】
+🎙 英语口播稿：（每句一行，我能直接读）
+
+━━━ 📚 迷你英语课（用你自己的稿子学英语）━━━
+
+✏️ 核心词汇（3个稿中的关键词）：
+1. [单词] /音标/ = 中文
+   → 稿中用法："..."
+   → 你试着用这个词造一个关于你自己的句子
+2. ...
+3. ...
+
+📖 语法聚焦（1个稿中用到的语法点）：
+• 语法名：（比如"用过去时讲故事"）
+• 稿中例句："..."
+• 为什么这里用这个时态？
+• 改错练习：把这句话改对——"Yesterday I go to work and feel very tired" → （让AI展示正确答案）
+
+🔄 替代表达（同一个意思还能怎么说）：
+• 稿中句子："..."
+• 换个说法："..."（A2水平能说的版本）
+• 再换个说法："..."（稍微升级一点的版本）
+
+🔊 发音挑战：指出稿中最难读的2个词，解释嘴巴舌头怎么放
+
+💡 成长提示：做完这期视频，你的英语会在哪个方面进步？（比如：学会了描述家庭情感 / 练习了过去时 / etc.）
+
+总词数：___ | 预计口播时长：___</pre>
+  </div>
+  <div class="prompt-card" style="border: 1px solid var(--accent-light);">
+    <h3>🎓 学习复盘（周末复习本周内容）</h3>
+    <button class="copy-btn" onclick="copyPrompt('review2')">复制</button>
+    <pre id="promptReview2">你是我的英语私教。这周我录了7条英语视频，下面是我这周积累的单词、表达和语法点。
+
+请帮我做一次学习复盘：
+
+【本周词汇】
+{粘贴笔记本里的本周单词}
+
+【本周表达】
+{粘贴笔记本里的本周表达}
+
+【本周语法】
+{粘贴笔记本里的本周语法}
+
+【请帮我】
+1. 📊 本周进步总结：我在哪些方面进步了？（词汇量？语法？流利度？）
+2. 🔄 制作一个小测验：
+   - 3道填空题（用本周学到的词填进去）
+   - 2道改错题（把我本周可能犯的错误改正）
+   - 1道造句题（用本周学到的句型写一个关于你自己的句子）
+3. 🎯 下周学习建议：基于本周表现，下周重点练什么？
+4. 🌟 夸夸我：指出本周做的最好的一件事（学了哪个词、哪句话说得最自然）
+5. 📝 推荐：给我3个下周可以聊的新话题——和本周话题有关联但更进一步</pre>
+  </div>
+  <div class="prompt-card">
+    <h3>📊 周数据分析</h3>
+    <button class="copy-btn" onclick="copyPrompt('review')">复制</button>
+    <pre id="promptReview">你是内容策略师。我的英语情感口播账号本周数据：
+
+{Day1-Day7 数据}
+
+分析：
+1. 最好/最差是哪条？为什么？
+2. 观众在评论里表达了什么情绪？（如果有评论）
+3. 下周3个话题建议
+4. 我的英语标题/表达有没有进步？
 
 本周数据：
 Day1 / {话题} / 播放___ 点赞___ 评论___ 收藏___
@@ -889,39 +970,6 @@ Day4 / {话题} / 播放___ 点赞___ 评论___ 收藏___
 Day5 / {话题} / 播放___ 点赞___ 评论___ 收藏___
 Day6 / {话题} / 播放___ 点赞___ 评论___ 收藏___
 Day7 / {话题} / 播放___ 点赞___ 评论___ 收藏___</pre>
-  </div>
-  <div class="prompt-card" style="border: 1px solid var(--accent-light);">
-    <h3>🎬 每日脚本撰写（根据选定话题写稿）</h3>
-    <button class="copy-btn" onclick="copyPrompt('script')">复制</button>
-    <pre id="promptScript">你是我的英语口播脚本教练。我今天选了一个话题，需要你帮我写一条1-3分钟的英语口播稿。
-
-我的英语水平A2-B1。
-
-【我的话题】
-（英文）{粘贴英文话题}
-（中文）{粘贴中文话题}
-
-【我对这个话题的初步想法】
-{粘贴你在灵感想法里写的内容}
-
-【请帮我写口播稿】
-结构：
-- Hook（开头1句抓人，用疑问句或个人经历开头）
-- Body（2-3段，每段3-4句，讲具体感受或故事）
-- Ending（1句总结，温柔有力）
-
-语言要求：
-- 每句不超过12个词
-- 只用一般现在时/过去时/进行时
-- 用最常见词（sad不是melancholy, tired不是exhausted）
-- 加入语气停顿词（honestly, you know, actually, I mean）
-- 像在对朋友说话，不是朗读课文
-
-格式：
-英文口播稿：（每句一行）
-生词提示：（标出B1以上水平的词+音标+中文）
-总词数：
-预计口播时长：</pre>
   </div>
 </div>
 
@@ -1793,7 +1841,7 @@ document.addEventListener('click', function(e) {
 
 // ============ PROMPTS ============
 function copyPrompt(type) {
-  const idMap = { batch: 'promptBatch', single: 'promptSingle', oral: 'promptOral', review: 'promptReview', script: 'promptScript' };
+  const idMap = { batch: 'promptBatch', single: 'promptSingle', oral: 'promptOral', review: 'promptReview', review2: 'promptReview2', script: 'promptScript' };
   const el = document.getElementById(idMap[type] || ('prompt' + type.charAt(0).toUpperCase() + type.slice(1)));
   navigator.clipboard.writeText(el.textContent).then(() => {
     const btns = document.querySelectorAll('.copy-btn');
