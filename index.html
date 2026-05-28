@@ -1390,6 +1390,7 @@ function openTopicWorkbench(dayKey, dayName) {
     ${cat ? '<span class="wb-cat">' + cat + '</span>' : ''}
     <div class="wb-en">${dayData.topic || '(未选择话题)'}</div>
     <div class="wb-zh">${dayData.topicZh || ''}</div>
+    ${dayData.topic ? '<button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="changeTopic()">🔄 修改话题</button>' : ''}
   `;
 
   // Thoughts and script
@@ -1402,6 +1403,25 @@ function openTopicWorkbench(dayKey, dayName) {
   saveData(data);
   currentAccumTab = 'words';
   switchAccumTab('words');
+}
+
+function changeTopic() {
+  if (!wbDayKey || !wbDayName) return;
+  // Remove current topic from used list so it's available again
+  const data = loadData();
+  const oldTopic = data[wbDayKey]?.topic;
+  if (oldTopic && data._usedTopics) {
+    const idx = ALL_TOPICS.findIndex(t => t.en === oldTopic);
+    if (idx >= 0) data._usedTopics = data._usedTopics.filter(i => i !== idx);
+    saveData(data);
+  }
+  // Clear current topic and open picker
+  data[wbDayKey].topic = '';
+  data[wbDayKey].topicZh = '';
+  data[wbDayKey].topicCat = '';
+  saveData(data);
+  document.getElementById('topicWorkbenchView').style.display = 'none';
+  openTopicPicker(wbDayKey, wbDayName);
 }
 
 function closeTopicWorkbench() {
@@ -1451,7 +1471,7 @@ function archiveAndClear() {
   if (existIdx >= 0) data._archives[existIdx] = entry;
   else data._archives.unshift(entry);
   saveData(data);
-  // Clear workbench for next round
+  // Clear everything including topic - back to fresh selection state
   document.getElementById('wbThoughts').value = '';
   document.getElementById('wbScript').value = '';
   document.getElementById('wordRows').innerHTML = makeWordRow('', '');
@@ -1460,8 +1480,15 @@ function archiveAndClear() {
   data[wbDayKey].thoughts = '';
   data[wbDayKey].script = '';
   data[wbDayKey].accumulation = { words: [], expressions: [], grammar: [] };
+  data[wbDayKey].topic = '';
+  data[wbDayKey].topicZh = '';
+  data[wbDayKey].topicCat = '';
   saveData(data);
-  showToast('已归档并清空 ✅ 可以开始下一次编辑');
+  // Return to normal topics view
+  document.getElementById('topicNormalView').style.display = 'block';
+  document.getElementById('topicWorkbenchView').style.display = 'none';
+  renderTopics('all');
+  showToast('已归档 ✅ 话题已清空，可以选新话题');
 }
 
 // ===== ROW-BASED ACCUMULATION =====
@@ -1506,7 +1533,7 @@ function renderRows(type) {
 
 function makeWordRow(word, meaning) {
   return `<div class="input-row">
-    <input type="text" class="word-en" placeholder="英文单词" value="${escHtml(word)}" style="flex:2;" oninput="autoTranslateWord(this)">
+    <input type="text" class="word-en" placeholder="英文单词" value="${escHtml(word)}" style="flex:2;" oninput="autoTranslateWord(this); if(!this.value.trim())this.closest('.input-row').querySelector('.word-zh').value=''">
     <input type="text" class="word-zh" placeholder="中文意思" value="${escHtml(meaning)}" style="flex:1;">
     <button class="translate-btn" onclick="translateWordBtn(this)" title="自动翻译">译</button>
     <button class="row-delete" onclick="this.closest('.input-row').remove()">×</button>
