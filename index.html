@@ -778,7 +778,11 @@ nav button.active {
       </div>
     </div>
 
-    <button class="btn btn-primary" style="width:100%;margin-top:12px;margin-bottom:40px;" onclick="saveWorkbench()">💾 保存所有内容</button>
+    <div style="display:flex;gap:8px;margin-top:12px;margin-bottom:40px;">
+      <button class="btn btn-outline" style="flex:1;" onclick="saveWorkbench()">💾 保存</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="archiveAndClear()">📦 归档并清空</button>
+    </div>
+    <p style="font-size:11px;color:var(--sub);text-align:center;margin:-30px 0 40px;">保存 = 保留当前编辑 · 归档 = 存入记录 + 清空页面开始下一次编辑</p>
   </div>
 
 </div>
@@ -1239,9 +1243,15 @@ document.addEventListener('click', function(e) {
 
 // ============ TOPICS ============
 function renderTopics(cat) {
-  const filtered = cat === 'all' ? ALL_TOPICS : ALL_TOPICS.filter(t => t.cat === cat);
+  const data = loadData();
+  const used = data._usedTopics || [];
+  const available = ALL_TOPICS.filter(t => !used.includes(t.idx));
+  const filtered = (cat === 'all' ? available : available.filter(t => t.cat === cat));
   let html = '';
-  filtered.forEach(t => {
+  if (filtered.length === 0 && used.length > 0) {
+    html = '<div class="accum-empty">这个分类的话题都用过啦 🎉<br><button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="resetUsedTopics()">🔄 重置话题库</button></div>';
+  } else {
+    filtered.forEach(t => {
     html += `<div class="topic-item topic-item-clickable" onclick="openTopicDetail(${t.idx})">
       <div style="flex:1;min-width:0;">
         <span class="cat">${t.cat}</span>
@@ -1250,7 +1260,8 @@ function renderTopics(cat) {
       </div>
       <span style="font-size:18px;color:var(--accent-light);flex-shrink:0;">→</span>
     </div>`;
-  });
+    });
+  }
   document.getElementById('topicsList').innerHTML = html;
 
   // Week topics - clickable day rows
@@ -1307,8 +1318,15 @@ function closeTopicPicker() {
 }
 
 function shufflePickerTopics() {
-  const shuffled = [...ALL_TOPICS].sort(() => Math.random() - 0.5);
-  const picks = shuffled.slice(0, 8);
+  const data = loadData();
+  const used = data._usedTopics || [];
+  const available = ALL_TOPICS.filter(t => !used.includes(t.idx));
+  if (available.length === 0) {
+    document.getElementById('pickerTopicList').innerHTML = '<div class="accum-empty">所有话题都用过啦！🎉<br>去进度页重置话题库</div>';
+    return;
+  }
+  const shuffled = [...available].sort(() => Math.random() - 0.5);
+  const picks = shuffled.slice(0, Math.min(8, shuffled.length));
   let html = '';
   picks.forEach(t => {
     html += `<div class="picker-topic-card" onclick="pickTopicForDay('${t.en.replace(/'/g, "\\'")}', '${t.zh.replace(/'/g, "\\'")}', '${t.cat}')">
@@ -1327,8 +1345,13 @@ function pickTopicForDay(topicEn, topicZh, topicCat) {
   data[pickerDayKey].topic = topicEn;
   data[pickerDayKey].topicZh = topicZh;
   data[pickerDayKey].topicCat = topicCat;
+  // Mark topic as used
+  if (!data._usedTopics) data._usedTopics = [];
+  const topicIdx = ALL_TOPICS.findIndex(t => t.en === topicEn);
+  if (topicIdx >= 0 && !data._usedTopics.includes(topicIdx)) {
+    data._usedTopics.push(topicIdx);
+  }
   saveData(data);
-  // After picking, open workbench
   const dayName = pickerDayName;
   const dayKey = pickerDayKey;
   closeTopicPickerQuick();
@@ -1339,6 +1362,15 @@ function closeTopicPickerQuick() {
   document.getElementById('topicNormalView').style.display = 'block';
   document.getElementById('topicPickerView').style.display = 'none';
   pickerDayKey = null;
+}
+
+function resetUsedTopics() {
+  if (!confirm('确定重置话题库吗？所有100条话题将重新可用。')) return;
+  const data = loadData();
+  data._usedTopics = [];
+  saveData(data);
+  renderTopics(document.querySelector('.cat-filter-btn.active')?.dataset?.cat || 'all');
+  showToast('话题库已重置 ✅');
 }
 
 // ===== WORKBENCH =====
@@ -1392,18 +1424,26 @@ function saveWorkbenchSilent() {
     expressions: collectExprRows(),
     grammar: collectGrammarRows()
   };
-  // Archive this save
+  saveData(data);
+}
+
+function saveWorkbench() {
+  saveWorkbenchSilent();
+  showToast('已保存 ✅');
+}
+
+function archiveAndClear() {
+  if (!wbDayKey) return;
+  saveWorkbenchSilent();
+  const data = loadData();
   const topic = data[wbDayKey].topic || '未命名话题';
   const topicZh = data[wbDayKey].topicZh || '';
   if (!data._archives) data._archives = [];
-  // Update existing archive for this date, or create new
   const existIdx = data._archives.findIndex(a => a.date === wbDayKey);
   const entry = {
     date: wbDayKey,
     topic: topic,
     topicZh: topicZh,
-    thoughts: data[wbDayKey].thoughts,
-    script: data[wbDayKey].script,
     wordsCount: data[wbDayKey].accumulation.words.length,
     exprCount: data[wbDayKey].accumulation.expressions.length,
     grammarCount: data[wbDayKey].accumulation.grammar.length,
@@ -1412,11 +1452,17 @@ function saveWorkbenchSilent() {
   if (existIdx >= 0) data._archives[existIdx] = entry;
   else data._archives.unshift(entry);
   saveData(data);
-}
-
-function saveWorkbench() {
-  saveWorkbenchSilent();
-  showToast('已保存 ✅');
+  // Clear workbench for next round
+  document.getElementById('wbThoughts').value = '';
+  document.getElementById('wbScript').value = '';
+  document.getElementById('wordRows').innerHTML = makeWordRow('', '');
+  document.getElementById('exprRows').innerHTML = makeExprRow('', '');
+  document.getElementById('grammarRows').innerHTML = makeGrammarRow('', '');
+  data[wbDayKey].thoughts = '';
+  data[wbDayKey].script = '';
+  data[wbDayKey].accumulation = { words: [], expressions: [], grammar: [] };
+  saveData(data);
+  showToast('已归档并清空 ✅ 可以开始下一次编辑');
 }
 
 // ===== ROW-BASED ACCUMULATION =====
@@ -1848,13 +1894,24 @@ function renderArchives() {
     html = '<div class="accum-empty">还没有归档记录</div>';
   } else {
     archives.forEach(a => {
-      html += `<div class="accum-item" style="flex-direction:column;align-items:stretch;gap:4px;cursor:pointer;" onclick="viewArchive('${a.date}')">
-        <div style="font-weight:600;color:var(--text);font-size:14px;">${escHtml(a.topic)}</div>
+      html += `<div class="accum-item" style="flex-direction:column;align-items:stretch;gap:4px;position:relative;">
+        <div style="font-weight:600;color:var(--text);font-size:14px;cursor:pointer;padding-right:30px;" onclick="viewArchive('${a.date}')">${escHtml(a.topic)}</div>
+        ${a.topicZh ? '<div style="font-size:12px;color:var(--sub);padding-right:30px;">'+escHtml(a.topicZh)+'</div>' : ''}
         <div style="font-size:12px;color:var(--sub);">${a.date} · ${a.savedAt} · 📝${a.wordsCount} 💬${a.exprCount} 📖${a.grammarCount}</div>
+        <button class="accum-delete" style="position:absolute;top:8px;right:10px;" onclick="event.stopPropagation();deleteArchive('${a.date}')">🗑</button>
       </div>`;
     });
   }
   document.getElementById('archiveList').innerHTML = html;
+}
+
+function deleteArchive(dateKey) {
+  if (!confirm('确定删除这个归档记录吗？（话题数据不会丢失）')) return;
+  const data = loadData();
+  data._archives = (data._archives || []).filter(a => a.date !== dateKey);
+  saveData(data);
+  renderArchives();
+  showToast('归档已删除');
 }
 
 function viewArchive(dateKey) {
