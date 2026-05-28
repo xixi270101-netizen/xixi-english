@@ -647,6 +647,14 @@ nav button.active {
       <br><button class="btn btn-outline btn-sm" style="margin-top:6px;" onclick="document.getElementById('installTip').style.display='none'">知道了</button>
     </p>
   </div>
+
+  <div class="card">
+    <h2>💡 灵感记录</h2>
+    <p style="font-size:12px;color:var(--sub);margin-bottom:8px;">想到什么就记下来</p>
+    <textarea class="inspiration-input" id="inspirationInput" placeholder="比如：今天在地铁上看到一个女生在哭，我突然想到...&#10;&#10;或者：想聊一聊我为什么害怕被别人觉得"不够好"..."></textarea>
+    <button class="btn btn-primary btn-sm" style="margin-top:8px;width:100%;" onclick="saveInspiration()">记下这个灵感</button>
+    <div class="inspiration-list" id="inspirationList"></div>
+  </div>
 </div>
 
 <!-- ===== 计时器页面 ===== -->
@@ -702,24 +710,24 @@ nav button.active {
       </div>
       <div id="topicsList"></div>
     </div>
-    <div class="card">
-      <h2>💡 灵感记录</h2>
-      <p style="font-size:12px;color:var(--sub);margin-bottom:8px;">想到什么就记下来——一个话题、一句话、一种情绪都可以</p>
-      <textarea class="inspiration-input" id="inspirationInput" placeholder="比如：今天在地铁上看到一个女生在哭，我突然想到...&#10;&#10;或者：想聊一聊我为什么害怕被别人觉得"不够好"..."></textarea>
-      <button class="btn btn-primary btn-sm" style="margin-top:8px;width:100%;" onclick="saveInspiration()">记下这个灵感</button>
-      <div class="inspiration-list" id="inspirationList"></div>
-    </div>
   </div>
 
   <!-- 话题选择器视图（无话题时选话题） -->
   <div id="topicPickerView" style="display:none;">
+    <!-- 自定义话题 -->
     <div class="card">
       <div class="picker-header">
         <button class="btn btn-outline btn-sm" onclick="closeTopicPicker()">← 返回</button>
         <h2 id="pickerTitle">选择话题</h2>
       </div>
-      <p style="font-size:12px;color:var(--sub);margin-bottom:12px;">每次随机抽8条，挑一个你最有感觉的</p>
-      <button class="btn btn-primary btn-sm" style="width:100%;margin-bottom:14px;" onclick="shufflePickerTopics()">🔄 换一批话题</button>
+      <p style="font-size:12px;color:var(--sub);margin-bottom:8px;">💡 或者自己输入一个话题</p>
+      <input type="text" id="customTopicEn" placeholder="英文话题（比如：Why I'm afraid of being happy）" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:13px;margin-bottom:6px;background:#fafcfd;">
+      <input type="text" id="customTopicZh" placeholder="中文话题（比如：为什么我害怕快乐）" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:13px;margin-bottom:8px;background:#fafcfd;">
+      <button class="btn btn-primary btn-sm" style="width:100%;margin-bottom:14px;" onclick="useCustomTopic()">✅ 使用自定义话题</button>
+      <div style="border-top:1px solid var(--border);padding-top:12px;margin-bottom:12px;">
+        <p style="font-size:12px;color:var(--sub);margin-bottom:8px;">或者从话题库随机抽取</p>
+        <button class="btn btn-outline btn-sm" style="width:100%;" onclick="shufflePickerTopics()">🔄 换一批话题</button>
+      </div>
       <div id="pickerTopicList"></div>
     </div>
   </div>
@@ -1113,14 +1121,13 @@ function switchPage(name) {
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
   document.getElementById('page' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
   document.getElementById('nav' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
-  if (name === 'today') renderToday();
+  if (name === 'today') { renderToday(); renderInspirations(); }
   if (name === 'stats') renderStats();
   if (name === 'topics') {
     document.getElementById('topicNormalView').style.display = 'block';
     document.getElementById('topicPickerView').style.display = 'none';
     document.getElementById('topicWorkbenchView').style.display = 'none';
     renderTopics('all');
-    renderInspirations();
   }
   if (name === 'notebook') { renderNotebook('words'); }
   if (name === 'stats') { renderStats(); renderArchives(); }
@@ -1351,6 +1358,25 @@ function pickTopicForDay(topicEn, topicZh, topicCat) {
     data._usedTopics.push(topicIdx);
   }
   saveData(data);
+  const dayName = pickerDayName;
+  const dayKey = pickerDayKey;
+  closeTopicPickerQuick();
+  openTopicWorkbench(dayKey, dayName);
+}
+
+function useCustomTopic() {
+  const en = document.getElementById('customTopicEn').value.trim();
+  const zh = document.getElementById('customTopicZh').value.trim();
+  if (!en) { showToast('请输入英文话题'); return; }
+  if (!pickerDayKey) return;
+  const data = loadData();
+  if (!data[pickerDayKey]) data[pickerDayKey] = { checks: {} };
+  data[pickerDayKey].topic = en;
+  data[pickerDayKey].topicZh = zh;
+  data[pickerDayKey].topicCat = '自定义';
+  saveData(data);
+  document.getElementById('customTopicEn').value = '';
+  document.getElementById('customTopicZh').value = '';
   const dayName = pickerDayName;
   const dayKey = pickerDayKey;
   closeTopicPickerQuick();
